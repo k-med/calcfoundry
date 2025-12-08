@@ -1,4 +1,4 @@
-baseURL = 'https://omnicalc-e8y.pages.dev/'
+baseURL = 'https://calcfoundry.com/'
 languageCode = 'en-us'
 title = 'CalcFoundry'
 theme = 'PaperMod'
