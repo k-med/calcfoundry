@@ -36,7 +36,7 @@ buildExpired = false
     url = 'https://github.com/k-med/calcfoundry'
   [[params.socialIcons]]
     name = 'ko-fi'
-    url = 'https://ko-fi.com/YOUR_USERNAME'
+    url = 'https://ko-fi.com/kmed430943'
 
 # This section enables the Search JSON file. 
 # Without this, the search bar cannot find any content.
