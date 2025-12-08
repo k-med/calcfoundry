@@ -1,7 +1,7 @@
-baseURL = "https://omnicalc-e8y.pages.dev/"
-title = "OmniCalc"
-theme = "PaperMod"
-languageCode = "en-us"
+baseURL = 'https://omnicalc-e8y.pages.dev/'
+languageCode = 'en-us'
+title = 'OmniCalc'
+theme = 'PaperMod'
 
 enableRobotsTXT = true
 buildDrafts = false
@@ -13,47 +13,48 @@ buildExpired = false
   minifyOutput = true
 
 [params]
-  env = "production"
-  title = "OmniCalc"
-  description = "Open Source Calculation Library"
-  keywords = ["Calculator", "Open Source", "Engineering", "Finance"]
-  author = "Me"
-  defaultTheme = "dark"
+  env = 'production'
+  title = 'OmniCalc'
+  description = 'Open Source Calculation Library'
+  keywords = ['Calculator', 'Open Source', 'Engineering', 'Finance']
+  author = 'Me'
+  defaultTheme = 'dark'
   ShowShareButtons = true
   ShowReadingTime = false
   ShowBreadCrumbs = true
   ShowPostNavLinks = true
+  
+  # This makes the top post look identical to the others (Uniformity)
+  disableSpecial1stPost = true 
 
   [params.assets]
     disableHLJS = true
 
   [[params.socialIcons]]
-    name = "github"
-    url = "https://github.com/YOUR_USERNAME/omnicalc"
-
+    name = 'github'
+    url = 'https://github.com/YOUR_USERNAME/omnicalc'
   [[params.socialIcons]]
-    name = "ko-fi"
-    url = "https://ko-fi.com/YOUR_USERNAME"
+    name = 'ko-fi'
+    url = 'https://ko-fi.com/YOUR_USERNAME'
 
-[menu]
-
-  [[menu.main]]
-    identifier = "categories"
-    name = "Library"
-    url = "/categories/"
-    weight = 10
-
-  [[menu.main]]
-    identifier = "search"
-    name = "Search"
-    url = "/search/"
-    weight = 20
-
-  [[menu.main]]
-    identifier = "donate"
-    name = "♥ Donate"
-    url = "https://ko-fi.com/"
-    weight = 30
-
+# This section enables the Search JSON file. 
+# Without this, the search bar cannot find any content.
 [outputs]
   home = ["HTML", "RSS", "JSON"]
+
+[menu]
+  [[menu.main]]
+    identifier = 'categories'
+    name = 'Library'
+    url = '/categories/'
+    weight = 10
+  [[menu.main]]
+    identifier = 'search'
+    name = 'Search'
+    url = '/search/'
+    weight = 20
+  [[menu.main]]
+    identifier = 'donate'
+    name = '♥ Donate'
+    url = 'https://ko-fi.com/'
+    weight = 30
