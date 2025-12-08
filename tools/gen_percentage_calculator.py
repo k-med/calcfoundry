@@ -215,12 +215,13 @@ pct_js = """
     }
 """
 
+# FIX: Use 'aligned' instead of 'align*', and ensure % is escaped as \%
 pct_latex = r"""
-\begin{align*}
+\begin{aligned}
 \text{1. Percentage of:} & \quad P = \frac{\text{Percent}}{100} \times \text{Total} \\
 \text{2. What \% is X of Y:} & \quad \% = \frac{\text{Part}}{\text{Total}} \times 100 \\
 \text{3. Percent Change:} & \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \times 100
-\end{align*}
+\end{aligned}
 """
 
 pct_content = """
