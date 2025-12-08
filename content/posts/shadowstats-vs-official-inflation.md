@@ -1,6 +1,6 @@
 ---
 title: "ShadowStats vs. Official Inflation"
-date: 2025-12-09
+date: 2025-12-08
 categories: ["Finance"]
 summary: "Calculate the true devaluation of the dollar. Compare the Official Government CPI rate against the ShadowStats 1980-based alternative methodology side-by-side."
 math: true

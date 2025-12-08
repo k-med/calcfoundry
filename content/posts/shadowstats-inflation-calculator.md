@@ -1,6 +1,6 @@
 ---
 title: "ShadowStats Inflation Calculator"
-date: 2025-12-09
+date: 2025-12-08
 categories: ["Economics"]
 summary: "Compare Official US CPI inflation against the ShadowStats (1980-based) true inflation. See how much the methodology changes affect your wallet."
 math: true
