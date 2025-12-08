@@ -31,7 +31,7 @@ disableSpecial1stPost: true
 <div class="calc-grid">
   <div class="calc-main">
     {inputs_html}
-    <button onclick="calculate_{tool_id}()">Calculate</button>
+    <button onclick="calculate_{tool_id}()">Calculate Confidence</button>
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
     </div>
@@ -96,12 +96,20 @@ disableSpecial1stPost: true
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; }}
   .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
+  
+  /* Input styling specific to this calc */
+  .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
+  .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
+  .calc-main button {{ margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }}
+  .calc-main button:hover {{ background: #0056b3; }}
+  .result-box {{ margin-top: 20px; padding: 15px; background: #2d2d2d; border-left: 4px solid #007bff; }}
 </style>
 
 {{{{< /calculator >}}}}
 
-### Formula
-This tool uses the following mathematical principle:
+### Mathematical Principle
+
+This calculator uses the **Wilson Score Interval** for binomial proportions. Unlike a normal approximation interval, the Wilson interval is asymmetric and remains accurate even for small sample sizes or extreme probabilities (near 0 or 1).
 
 $$
 {formula_latex}
@@ -112,34 +120,71 @@ $$
         f.write(content)
     print(f"✅ Created: {filename}")
 
-# --- EXAMPLE USAGE (This is what you prompt AI to generate) ---
 
-# Example: ROI Calculator (Updated with 'resultText' variable)
-roi_inputs = """
-<label>Total Investment ($)</label>
-<input type="number" id="inv" value="5000">
-<label>Returned Amount ($)</label>
-<input type="number" id="ret" value="6500">
+# --- CALCULATOR DEFINITION ---
+
+wilson_inputs = """
+<label>Total Trials (e.g., Visitors, Reviews)</label>
+<input type="number" id="n_trials" placeholder="e.g. 100">
+
+<label>Successes (e.g., Sales, 5-Star Ratings)</label>
+<input type="number" id="n_success" placeholder="e.g. 95">
+
+<label>Confidence Level</label>
+<select id="conf_level">
+    <option value="1.64485">90%</option>
+    <option value="1.95996" selected>95% (Standard)</option>
+    <option value="2.57583">99%</option>
+</select>
 """
 
-roi_js = """
-    let i = parseFloat(document.getElementById('inv').value);
-    let r = parseFloat(document.getElementById('ret').value);
-    
-    if (isNaN(i) || isNaN(r)) {
-        var resultText = "Please enter valid numbers";
+wilson_js = """
+    // 1. Get Inputs
+    let n = parseFloat(document.getElementById('n_trials').value);
+    let x = parseFloat(document.getElementById('n_success').value);
+    let z = parseFloat(document.getElementById('conf_level').value);
+
+    // 2. Validation
+    if (isNaN(n) || isNaN(x) || n <= 0) {
+        var resultText = "Please enter valid positive numbers.";
+    } else if (x > n) {
+        var resultText = "Successes cannot be greater than Total Trials.";
     } else {
-        let res = ((r - i) / i) * 100;
-        // NOTE: We assign the output string to 'resultText' for the wrapper to handle
-        var resultText = `<strong>ROI:</strong> ${res.toFixed(2)}% (Profit: $${r-i})`;
+        // 3. Wilson Score Formula Logic
+        // p_hat is the observed proportion
+        let p = x / n;
+        
+        // Parts of the formula broken down for readability
+        let p1 = p + ( (z*z) / (2*n) );
+        let p2 = z * Math.sqrt( ( (p*(1-p))/n ) + ( (z*z)/(4*n*n) ) );
+        let p3 = 1 + ( (z*z) / n );
+        
+        // Calculate Lower and Upper Bounds
+        let lower = (p1 - p2) / p3;
+        let upper = (p1 + p2) / p3;
+        
+        // Convert to Percentages
+        let obs_perc = (p * 100).toFixed(2);
+        let min_perc = (lower * 100).toFixed(2);
+        let max_perc = (upper * 100).toFixed(2);
+        
+        // 4. Format Output
+        // We use a clean summary string for the result text
+        var resultText = `
+            <strong>True Score Range:</strong> ${min_perc}% — ${max_perc}%<br>
+            <small style='opacity:0.8'>Observed Rate: ${obs_perc}% (at 95% Confidence)</small>
+        `;
     }
 """
 
+wilson_latex = """w = \\frac{\\hat{p} + \\frac{z^2}{2n} \\pm z \\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n} + \\frac{z^2}{4n^2}}}{1 + \\frac{z^2}{n}}"""
+
+# Generate the file
 create_calculator(
-    title="Return on Investment Calculator", 
-    category="Business", 
-    description="Calculate the percentage return on any investment.",
-    inputs_html=roi_inputs,
-    calculation_js=roi_js,
-    formula_latex="ROI = \\frac{Current Value - Cost of Investment}{Cost of Investment} \\times 100"
+    title="True Rating Calculator (Wilson Score)", 
+    category="Statistics", 
+    description="Calculate the true statistical accuracy of a rating or conversion rate using the Wilson Score Interval.",
+    inputs_html=wilson_inputs,
+    calculation_js=wilson_js,
+    formula_latex=wilson_latex
 )
