@@ -51,11 +51,9 @@ The only percentage tool you need. Calculate percentage increases, find parts of
 
     window.onload = function() { 
         renderHistory_universal_percentage_calculator();
-        // Trigger label update on load
         updateLabels_universal_percentage_calculator(); 
     };
 
-    // Dynamic Label Switching Logic
     function updateLabels_universal_percentage_calculator() {
         const mode = document.getElementById('calc_mode').value;
         const lblA = document.getElementById('label_a');
@@ -88,7 +86,6 @@ The only percentage tool you need. Calculate percentage increases, find parts of
         historyText = "Invalid Input";
     } else {
         if (mode === 'percent_of') {
-            // Logic: What is A% of B?
             result = (valA / 100) * valB;
             resultText = `
                 <strong>Result:</strong> <span style="color:#4caf50; font-size:1.4em;">${result.toLocaleString()}</span><br>
@@ -97,7 +94,6 @@ The only percentage tool you need. Calculate percentage increases, find parts of
             historyText = `${valA}% of ${valB} = ${result}`;
         } 
         else if (mode === 'what_percent') {
-            // Logic: A is what % of B?
             if (valB === 0) {
                 resultText = "Cannot divide by zero.";
                 historyText = "Error";
@@ -111,14 +107,13 @@ The only percentage tool you need. Calculate percentage increases, find parts of
             }
         } 
         else if (mode === 'percent_change') {
-            // Logic: Change from A to B
             if (valA === 0) {
                 resultText = "Starting value cannot be zero for change calculation.";
                 historyText = "Error";
             } else {
                 result = ((valB - valA) / valA) * 100;
                 let direction = result > 0 ? "Increase" : "Decrease";
-                let color = result > 0 ? "#4caf50" : "#ff5252"; // Green for up, Red for down
+                let color = result > 0 ? "#4caf50" : "#ff5252"; 
                 
                 resultText = `
                     <strong>${direction}:</strong> <span style="color:${color}; font-size:1.4em;">${Math.abs(result).toFixed(2)}%</span><br>
@@ -178,9 +173,9 @@ The only percentage tool you need. Calculate percentage increases, find parts of
 Percentages are the universal language of comparison. Whether you are calculating a discount at a store, analyzing stock market returns, or grading a test, understanding how to manipulate these numbers is essential.
 
 ### The Three Modes explained
-1. **Percentage of a Number:** Use this to find a portion. *Example: "What is 20% of my $50 bill?"*
+1. **Percentage of a Number:** Use this to find a portion. *Example: "What is 20% of my \$50 bill?"*
 2. **What % is X of Y:** Use this to find the rate. *Example: "I got 45 questions right out of 50. What is my grade?"*
-3. **Percentage Change:** Use this to compare growth or loss. *Example: "My rent went from $1,000 to $1,100. How much did it go up?"*
+3. **Percentage Change:** Use this to compare growth or loss. *Example: "My rent went from \$1,000 to \$1,100. How much did it go up?"*
 
 
 ## The Math Behind It
@@ -189,8 +184,8 @@ Depending on the mode you selected, the tool uses one of these three formulas:
 $$
 
 \begin{aligned}
-\text{1. Percentage of:} & \quad P = \frac{\text{Percent}}{100} \times \text{Total} \\
-\text{2. What \% is X of Y:} & \quad \% = \frac{\text{Part}}{\text{Total}} \times 100 \\
+\text{1. Percentage of:} & \quad P = \frac{\text{Percent}}{100} \times \text{Total} \\\\
+\text{2. What \% is X of Y:} & \quad \% = \frac{\text{Part}}{\text{Total}} \times 100 \\\\
 \text{3. Percent Change:} & \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \times 100
 \end{aligned}
 

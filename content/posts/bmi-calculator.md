@@ -66,17 +66,13 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
 
     window.onload = function() { 
         renderHistory_bmi_calculator();
-        setMode_bmi_calculator('imperial'); // Default load
+        setMode_bmi_calculator('imperial'); 
     };
 
     function setMode_bmi_calculator(mode) {
         document.getElementById('calc_mode_bmi_calculator').value = mode;
-        
-        // Toggle Input Visibility
         document.getElementById('group_imperial').style.display = (mode === 'imperial') ? 'block' : 'none';
         document.getElementById('group_metric').style.display = (mode === 'metric') ? 'block' : 'none';
-
-        // Toggle Button Styles
         document.getElementById('btn_imperial_bmi_calculator').className = (mode === 'imperial') ? 'mode-btn active' : 'mode-btn';
         document.getElementById('btn_metric_bmi_calculator').className = (mode === 'metric') ? 'mode-btn active' : 'mode-btn';
     }
@@ -88,7 +84,6 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
     let weight_display = "";
     let height_display = "";
 
-    // Calculation Logic
     if (mode === 'imperial') {
         let ft = parseFloat(document.getElementById('feet').value) || 0;
         let inc = parseFloat(document.getElementById('inches').value) || 0;
@@ -97,7 +92,6 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
         let total_inches = (ft * 12) + inc;
         
         if (total_inches > 0 && lbs > 0) {
-            // Formula: 703 x weight (lbs) / [height (in)]^2
             bmi = 703 * (lbs / (total_inches * total_inches));
             weight_display = lbs + " lbs";
             height_display = ft + "'" + inc + '"';
@@ -107,7 +101,6 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
         let kg = parseFloat(document.getElementById('kg').value) || 0;
         
         if (cm > 0 && kg > 0) {
-            // Formula: weight (kg) / [height (m)]^2
             let m = cm / 100;
             bmi = kg / (m * m);
             weight_display = kg + " kg";
@@ -115,7 +108,6 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
         }
     }
 
-    // Generate Results
     let resultText = "";
     let historyItem = "";
 
@@ -150,7 +142,7 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
     function addToHistory_bmi_calculator(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_bmi_calculator)) || [];
         history.unshift(item);
-        if (history.length > 5) history.pop(); // Keep list short for this one
+        if (history.length > 5) history.pop(); 
         localStorage.setItem(STORAGE_KEY_bmi_calculator, JSON.stringify(history));
         renderHistory_bmi_calculator();
     }
@@ -211,7 +203,7 @@ BMI is calculated differently depending on your unit system, though the underlyi
 $$
 
 \begin{aligned}
-\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\
+\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\\\
 \text{Imperial:} & \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
 \end{aligned}
 

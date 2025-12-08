@@ -63,17 +63,13 @@ disableSpecial1stPost: true
 
     window.onload = function() {{ 
         renderHistory_{tool_id}();
-        setMode_{tool_id}('imperial'); // Default load
+        setMode_{tool_id}('imperial'); 
     }};
 
     function setMode_{tool_id}(mode) {{
         document.getElementById('calc_mode_{tool_id}').value = mode;
-        
-        // Toggle Input Visibility
         document.getElementById('group_imperial').style.display = (mode === 'imperial') ? 'block' : 'none';
         document.getElementById('group_metric').style.display = (mode === 'metric') ? 'block' : 'none';
-
-        // Toggle Button Styles
         document.getElementById('btn_imperial_{tool_id}').className = (mode === 'imperial') ? 'mode-btn active' : 'mode-btn';
         document.getElementById('btn_metric_{tool_id}').className = (mode === 'metric') ? 'mode-btn active' : 'mode-btn';
     }}
@@ -90,7 +86,7 @@ disableSpecial1stPost: true
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
         history.unshift(item);
-        if (history.length > 5) history.pop(); // Keep list short for this one
+        if (history.length > 5) history.pop(); 
         localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
         renderHistory_{tool_id}();
     }}
@@ -179,7 +175,6 @@ bmi_js = """
     let weight_display = "";
     let height_display = "";
 
-    // Calculation Logic
     if (mode === 'imperial') {
         let ft = parseFloat(document.getElementById('feet').value) || 0;
         let inc = parseFloat(document.getElementById('inches').value) || 0;
@@ -188,7 +183,6 @@ bmi_js = """
         let total_inches = (ft * 12) + inc;
         
         if (total_inches > 0 && lbs > 0) {
-            // Formula: 703 x weight (lbs) / [height (in)]^2
             bmi = 703 * (lbs / (total_inches * total_inches));
             weight_display = lbs + " lbs";
             height_display = ft + "'" + inc + '"';
@@ -198,7 +192,6 @@ bmi_js = """
         let kg = parseFloat(document.getElementById('kg').value) || 0;
         
         if (cm > 0 && kg > 0) {
-            // Formula: weight (kg) / [height (m)]^2
             let m = cm / 100;
             bmi = kg / (m * m);
             weight_display = kg + " kg";
@@ -206,7 +199,6 @@ bmi_js = """
         }
     }
 
-    // Generate Results
     let resultText = "";
     let historyItem = "";
 
@@ -232,10 +224,10 @@ bmi_js = """
     }
 """
 
-# FIX: Use 'aligned' and clearer separation for Metric/Imperial
+# NOTE: We use four backslashes \\\\ to ensure two backslashes \\ survive into the Markdown file.
 bmi_latex = r"""
 \begin{aligned}
-\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\
+\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\\\
 \text{Imperial:} & \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
 \end{aligned}
 """
