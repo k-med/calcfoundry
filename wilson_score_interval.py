@@ -4,10 +4,13 @@ import os
 TOOLS_DIR = "content/posts"
 # ---------------------
 
+import os
+
+# --- CONFIGURATION ---
+TOOLS_DIR = "content/posts"
+# ---------------------
+
 def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content=""):
-    """
-    Generates a Professional Hugo Calculator with Math, History, and SEO Content.
-    """
     safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
     filename = f"{TOOLS_DIR}/{safe_title}.md"
     os.makedirs(TOOLS_DIR, exist_ok=True)
@@ -34,6 +37,13 @@ disableSpecial1stPost: true
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
     </div>
+    
+    <div style="margin-top: 15px; text-align: center; font-size: 0.85em;">
+        <a href="#the-math-behind-it" style="color: #666; text-decoration: underline; cursor: pointer;">
+            How is this calculated?
+        </a>
+    </div>
+
   </div>
 
   <div class="calc-history">
@@ -97,16 +107,11 @@ disableSpecial1stPost: true
 {educational_content}
 
 ## The Math Behind It
-The tool uses the **Wilson Score Interval** formula:
+The tool uses the following mathematical principle:
 
 $$
 {formula_latex}
 $$
-
-Where:
-* $n$ is the total number of trials (or sample size).
-* $\hat{{p}}$ is the observed proportion of successes.
-* $z$ is the z-score corresponding to the desired confidence level.
 """
     
     with open(filename, "w", encoding="utf-8") as f:

@@ -31,6 +31,13 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
     </div>
+    
+    <div style="margin-top: 15px; text-align: center; font-size: 0.85em;">
+        <a href="#the-math-behind-it" style="color: #666; text-decoration: underline; cursor: pointer;">
+            How is this calculated?
+        </a>
+    </div>
+
   </div>
 
   <div class="calc-history">
@@ -147,13 +154,8 @@ For Product B, the score is likely **92%** (because the data is solid).
 
 
 ## The Math Behind It
-The tool uses the **Wilson Score Interval** formula:
+The tool uses the following mathematical principle:
 
 $$
 w = \frac{\hat{p} + \frac{z^2}{2n} \pm z \sqrt{\frac{\hat{p}(1-\hat{p})}{n} + \frac{z^2}{4n^2}}}{1 + \frac{z^2}{n}}
 $$
-
-Where:
-* $n$ is the total number of trials (or sample size).
-* $\hat{p}$ is the observed proportion of successes.
-* $z$ is the z-score corresponding to the desired confidence level.
