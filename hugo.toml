@@ -57,5 +57,5 @@ buildExpired = false
   [[menu.main]]
     identifier = 'donate'
     name = '♥ Donate'
-    url = 'https://ko-fi.com/'
+    url = 'https://ko-fi.com/kmed430943'
     weight = 30
