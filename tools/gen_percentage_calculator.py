@@ -209,13 +209,15 @@ pct_js = """
     }
 """
 
-# NOTE: We use four backslashes \\\\ to ensure two backslashes \\ survive into the Markdown file.
-pct_latex = r"""
-\begin{aligned}
-\text{1. Percentage of:} & \quad P = \frac{\text{Percent}}{100} \times \text{Total} \\\\
-\text{2. What \% is X of Y:} & \quad \% = \frac{\text{Part}}{\text{Total}} \times 100 \\\\
-\text{3. Percent Change:} & \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \times 100
-\end{aligned}
+# NOTE: Standard String used.
+# \\ -> writes \ to file (for LaTeX commands like \frac)
+# \\\\ -> writes \\ to file (for LaTeX newlines in aligned environment)
+pct_latex = """
+\\begin{aligned}
+\\text{1. Percentage of:} & \\quad P = \\frac{\\text{Percent}}{100} \\times \\text{Total} \\\\
+\\text{2. What \\% is X of Y:} & \\quad \\% = \\frac{\\text{Part}}{\\text{Total}} \\times 100 \\\\
+\\text{3. Percent Change:} & \\quad \\Delta\\% = \\frac{\\text{New} - \\text{Old}}{\\text{Old}} \\times 100
+\\end{aligned}
 """
 
 # NOTE: We use \$ to escape dollar signs so Hugo doesn't treat them as math delimiters.
@@ -231,7 +233,7 @@ Percentages are the universal language of comparison. Whether you are calculatin
 
 pct_vars = """
 * $P$ is the **Part** (the result).
-* $\Delta\%$ is the **Change** in percentage.
+* $\\Delta\\%$ is the **Change** in percentage.
 * Values are standard decimal or integer inputs.
 """
 

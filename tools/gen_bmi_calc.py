@@ -224,12 +224,14 @@ bmi_js = """
     }
 """
 
-# NOTE: We use four backslashes \\\\ to ensure two backslashes \\ survive into the Markdown file.
-bmi_latex = r"""
-\begin{aligned}
-\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\\\
-\text{Imperial:} & \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
-\end{aligned}
+# NOTE: Standard String used to match working example logic.
+# \\ -> writes \ to file
+# \\\\ -> writes \\ to file (required for aligned line break)
+bmi_latex = """
+\\begin{aligned}
+\\text{Metric:} & \\quad BMI = \\frac{\\text{weight (kg)}}{\\text{height (m)}^2} \\\\
+\\text{Imperial:} & \\quad BMI = 703 \\times \\frac{\\text{weight (lbs)}}{\\text{height (in)}^2}
+\\end{aligned}
 """
 
 bmi_content = """
