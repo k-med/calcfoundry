@@ -27,7 +27,7 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
     <option value="2.57583">99%</option>
 </select>
 
-    <button onclick="calculate_true_rating_calculator_wilson_score()">Calculate Confidence</button>
+    <button onclick="calculate_true_rating_calculator_wilson_score()">Calculate</button>
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
     </div>
@@ -43,13 +43,9 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
 <script>
     const STORAGE_KEY_true_rating_calculator_wilson_score = "omnicalc_history_true_rating_calculator_wilson_score";
 
-    // Load history on page load
-    window.onload = function() {
-        renderHistory_true_rating_calculator_wilson_score();
-    };
+    window.onload = function() { renderHistory_true_rating_calculator_wilson_score(); };
 
     function calculate_true_rating_calculator_wilson_score() {
-        // -- AI Generated Logic Start --
         
     // 1. Get Inputs
     let n = parseFloat(document.getElementById('n_trials').value);
@@ -88,22 +84,17 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
         `;
     }
 
-        // -- AI Generated Logic End --
-
-        // 'resultText' must be defined in the calculation_js above
-        // Display Result
+        
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-
-        // Save to History
         addToHistory_true_rating_calculator_wilson_score(resultText);
     }
 
     function addToHistory_true_rating_calculator_wilson_score(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_true_rating_calculator_wilson_score)) || [];
-        history.unshift(item); // Add to top
-        if (history.length > 10) history.pop(); // Keep max 10
+        history.unshift(item);
+        if (history.length > 10) history.pop();
         localStorage.setItem(STORAGE_KEY_true_rating_calculator_wilson_score, JSON.stringify(history));
         renderHistory_true_rating_calculator_wilson_score();
     }
@@ -121,16 +112,12 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
 </script>
 
 <style>
-  /* Layout for Side-by-Side History */
   .calc-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
   @media (min-width: 768px) { .calc-grid { grid-template-columns: 2fr 1fr; } }
-  
   .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
   .calc-history ul { padding-left: 20px; color: #bbb; }
   .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }
-  
-  /* Input styling specific to this calc */
   .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
   .calc-main input, .calc-main select { width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }
   .calc-main button { margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
@@ -140,10 +127,33 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
 
 {{< /calculator >}}
 
-### Mathematical Principle
+## How to Use This Calculator
 
-This calculator uses the **Wilson Score Interval** for binomial proportions. Unlike a normal approximation interval, the Wilson interval is asymmetric and remains accurate even for small sample sizes or extreme probabilities (near 0 or 1).
+### Why "Average Rating" is a Lie
+Imagine two products:
+1. **Product A:** Has one review, and it is 5 stars. (Average: 5.0)
+2. **Product B:** Has 100 reviews, with 95 positive. (Average: 4.95)
+
+Mathematically, Product A has a higher average. But intuitively, you trust Product B more. 
+The **Wilson Score** solves this by asking: *"Given the data we have, what is the 'true' rating we can be 95% confident in?"*
+
+For Product A, the Wilson Score might be **20%** (because one data point is unreliable).
+For Product B, the score is likely **92%** (because the data is solid).
+
+### Real World Use Cases
+* **Amazon/eCommerce:** Ranking products by "Best Match" instead of "Highest Average".
+* **Reddit:** How "Best" comments are sorted (upvotes vs downvotes).
+* **Conversion Rate Optimization:** Determining if a landing page change actually worked.
+
+
+## The Math Behind It
+The tool uses the **Wilson Score Interval** formula:
 
 $$
 w = \frac{\hat{p} + \frac{z^2}{2n} \pm z \sqrt{\frac{\hat{p}(1-\hat{p})}{n} + \frac{z^2}{4n^2}}}{1 + \frac{z^2}{n}}
 $$
+
+Where:
+* $n$ is the total number of trials (or sample size).
+* $\hat{p}$ is the observed proportion of successes.
+* $z$ is the z-score corresponding to the desired confidence level.

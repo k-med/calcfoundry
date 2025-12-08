@@ -4,15 +4,14 @@ import os
 TOOLS_DIR = "content/posts"
 # ---------------------
 
-def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex):
+def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content=""):
     """
-    Generates a Professional Hugo Calculator with Math Support and LocalStorage History.
+    Generates a Professional Hugo Calculator with Math, History, and SEO Content.
     """
     safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
     filename = f"{TOOLS_DIR}/{safe_title}.md"
     os.makedirs(TOOLS_DIR, exist_ok=True)
     
-    # We define a unique ID for this tool so its history doesn't mix with other tools
     tool_id = safe_title.replace("-", "_")
     
     content = f"""---
@@ -31,7 +30,7 @@ disableSpecial1stPost: true
 <div class="calc-grid">
   <div class="calc-main">
     {inputs_html}
-    <button onclick="calculate_{tool_id}()">Calculate Confidence</button>
+    <button onclick="calculate_{tool_id}()">Calculate</button>
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
     </div>
@@ -47,30 +46,21 @@ disableSpecial1stPost: true
 <script>
     const STORAGE_KEY_{tool_id} = "omnicalc_history_{tool_id}";
 
-    // Load history on page load
-    window.onload = function() {{
-        renderHistory_{tool_id}();
-    }};
+    window.onload = function() {{ renderHistory_{tool_id}(); }};
 
     function calculate_{tool_id}() {{
-        // -- AI Generated Logic Start --
         {calculation_js}
-        // -- AI Generated Logic End --
-
-        // 'resultText' must be defined in the calculation_js above
-        // Display Result
+        
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-
-        // Save to History
         addToHistory_{tool_id}(resultText);
     }}
 
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        history.unshift(item); // Add to top
-        if (history.length > 10) history.pop(); // Keep max 10
+        history.unshift(item);
+        if (history.length > 10) history.pop();
         localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
         renderHistory_{tool_id}();
     }}
@@ -88,16 +78,12 @@ disableSpecial1stPost: true
 </script>
 
 <style>
-  /* Layout for Side-by-Side History */
   .calc-grid {{ display: grid; gap: 20px; grid-template-columns: 1fr; }}
   @media (min-width: 768px) {{ .calc-grid {{ grid-template-columns: 2fr 1fr; }} }}
-  
   .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; }}
   .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
-  
-  /* Input styling specific to this calc */
   .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
   .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
   .calc-main button {{ margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }}
@@ -107,13 +93,20 @@ disableSpecial1stPost: true
 
 {{{{< /calculator >}}}}
 
-### Mathematical Principle
+## How to Use This Calculator
+{educational_content}
 
-This calculator uses the **Wilson Score Interval** for binomial proportions. Unlike a normal approximation interval, the Wilson interval is asymmetric and remains accurate even for small sample sizes or extreme probabilities (near 0 or 1).
+## The Math Behind It
+The tool uses the **Wilson Score Interval** formula:
 
 $$
 {formula_latex}
 $$
+
+Where:
+* $n$ is the total number of trials (or sample size).
+* $\hat{{p}}$ is the observed proportion of successes.
+* $z$ is the z-score corresponding to the desired confidence level.
 """
     
     with open(filename, "w", encoding="utf-8") as f:
@@ -179,12 +172,30 @@ wilson_js = """
 
 wilson_latex = """w = \\frac{\\hat{p} + \\frac{z^2}{2n} \\pm z \\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n} + \\frac{z^2}{4n^2}}}{1 + \\frac{z^2}{n}}"""
 
-# Generate the file
+wilson_content = """
+### Why "Average Rating" is a Lie
+Imagine two products:
+1. **Product A:** Has one review, and it is 5 stars. (Average: 5.0)
+2. **Product B:** Has 100 reviews, with 95 positive. (Average: 4.95)
+
+Mathematically, Product A has a higher average. But intuitively, you trust Product B more. 
+The **Wilson Score** solves this by asking: *"Given the data we have, what is the 'true' rating we can be 95% confident in?"*
+
+For Product A, the Wilson Score might be **20%** (because one data point is unreliable).
+For Product B, the score is likely **92%** (because the data is solid).
+
+### Real World Use Cases
+* **Amazon/eCommerce:** Ranking products by "Best Match" instead of "Highest Average".
+* **Reddit:** How "Best" comments are sorted (upvotes vs downvotes).
+* **Conversion Rate Optimization:** Determining if a landing page change actually worked.
+"""
+
 create_calculator(
     title="True Rating Calculator (Wilson Score)", 
     category="Statistics", 
     description="Calculate the true statistical accuracy of a rating or conversion rate using the Wilson Score Interval.",
     inputs_html=wilson_inputs,
     calculation_js=wilson_js,
-    formula_latex=wilson_latex
+    formula_latex=wilson_latex,
+    educational_content=wilson_content  # <--- NEW FIELD
 )
