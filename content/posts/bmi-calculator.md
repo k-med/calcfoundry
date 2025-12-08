@@ -201,12 +201,7 @@ Athletes and bodybuilders may have a high BMI because muscle weighs more than fa
 BMI is calculated differently depending on your unit system, though the underlying ratio remains the same:
 
 $$
-
-\begin{aligned}
-\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\\\
-\text{Imperial:} & \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
-\end{aligned}
-
+BMI_{metric} = \frac{\text{weight (kg)}}{\text{height (m)}^2} \qquad \text{vs} \qquad BMI_{imperial} = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
 $$
 
 **Where:**

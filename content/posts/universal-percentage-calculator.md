@@ -182,13 +182,7 @@ Percentages are the universal language of comparison. Whether you are calculatin
 Depending on the mode you selected, the tool uses one of these three formulas:
 
 $$
-
-\begin{aligned}
-\text{1. Percentage of:} & \quad P = \frac{\text{Percent}}{100} \times \text{Total} \\\\
-\text{2. What \% is X of Y:} & \quad \% = \frac{\text{Part}}{\text{Total}} \times 100 \\\\
-\text{3. Percent Change:} & \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \times 100
-\end{aligned}
-
+P = \frac{\%}{100} \cdot \text{Total} \quad \bigg| \quad \% = \frac{\text{Part}}{\text{Total}} \cdot 100 \quad \bigg| \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \cdot 100
 $$
 
 **Where:**

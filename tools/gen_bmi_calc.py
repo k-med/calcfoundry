@@ -224,13 +224,8 @@ bmi_js = """
     }
 """
 
-# FIX: Using FOUR backslashes to force a proper newline in Markdown/LaTeX
-bmi_latex = r"""
-\begin{aligned}
-\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\\\
-\text{Imperial:} & \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
-\end{aligned}
-"""
+# FIX: Single line format.
+bmi_latex = r"BMI_{metric} = \frac{\text{weight (kg)}}{\text{height (m)}^2} \qquad \text{vs} \qquad BMI_{imperial} = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}"
 
 bmi_content = """
 ### Understanding Body Mass Index

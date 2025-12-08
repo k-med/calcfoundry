@@ -209,16 +209,10 @@ pct_js = """
     }
 """
 
-# FIX: Using FOUR backslashes to force a proper newline in Markdown/LaTeX
-pct_latex = r"""
-\begin{aligned}
-\text{1. Percentage of:} & \quad P = \frac{\text{Percent}}{100} \times \text{Total} \\\\
-\text{2. What \% is X of Y:} & \quad \% = \frac{\text{Part}}{\text{Total}} \times 100 \\\\
-\text{3. Percent Change:} & \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \times 100
-\end{aligned}
-"""
+# FIX: Single line format.
+pct_latex = r"P = \frac{\%}{100} \cdot \text{Total} \quad \bigg| \quad \% = \frac{\text{Part}}{\text{Total}} \cdot 100 \quad \bigg| \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \cdot 100"
 
-# FIX: Escaping the '$' signs so Hugo doesn't treat them as math delimiters
+# FIX: Escaped the '$' signs.
 pct_content = """
 ### Why this matters
 Percentages are the universal language of comparison. Whether you are calculating a discount at a store, analyzing stock market returns, or grading a test, understanding how to manipulate these numbers is essential.
