@@ -1,35 +1,29 @@
-import os
-from datetime import datetime
-
-# --- CONFIGURATION & PATH SETUP ---
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "content", "posts")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content, variable_definitions):
-    safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
-    filename = os.path.join(OUTPUT_DIR, f"{safe_title}.md")
-    tool_id = safe_title.replace("-", "_")
-    date_str = datetime.now().strftime("%Y-%m-%d")
-
-    content = f"""---
-title: "{title}"
-date: {date_str}
-categories: ["{category}"]
-summary: "{description}"
+---
+title: "ShadowStats Inflation Calculator"
+date: 2025-12-09
+categories: ["Economics"]
+summary: "Compare Official US CPI inflation against the ShadowStats (1980-based) true inflation. See how much the methodology changes affect your wallet."
 math: true
 disableSpecial1stPost: true
 ---
 
-{description}
+Compare Official US CPI inflation against the ShadowStats (1980-based) true inflation. See how much the methodology changes affect your wallet.
 
-{{{{< calculator >}}}}
+{{< calculator >}}
 
 <div class="calc-grid">
   <div class="calc-main">
-    {inputs_html}
-    <button onclick="calculate_{tool_id}()">Compare Inflation Realities</button>
+    
+<label>Start Year (1913 - Present)</label>
+<input type="number" id="start_year" placeholder="e.g. 1970" value="1970">
+
+<label>Amount in Start Year ($)</label>
+<input type="number" id="start_amount" placeholder="e.g. 1000" value="1000">
+
+<label>Target Year</label>
+<input type="number" id="end_year" placeholder="e.g. 2024" value="2024">
+
+    <button onclick="calculate_shadowstats_inflation_calculator()">Compare Inflation Realities</button>
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
     </div>
@@ -43,25 +37,25 @@ disableSpecial1stPost: true
 
   <div class="calc-history">
     <h4>History</h4>
-    <ul id="history_list_{tool_id}"></ul>
-    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear History</button>
+    <ul id="history_list_shadowstats_inflation_calculator"></ul>
+    <button onclick="clearHistory_shadowstats_inflation_calculator()" class="btn-small">Clear History</button>
   </div>
 </div>
 
 <script>
-    const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}"; 
+    const STORAGE_KEY_shadowstats_inflation_calculator = "calcfoundry_history_shadowstats_inflation_calculator"; 
 
     // --- OFFICIAL CPI DATA (Simplified Anchor Points for Accuracy) ---
     // Source: BLS CPI-U Historical Data
-    const CPI_ANCHORS = {{
+    const CPI_ANCHORS = {
         1913: 9.9, 1920: 20.0, 1930: 16.7, 1940: 14.0, 1950: 24.1, 
         1960: 29.6, 1970: 38.8, 1980: 82.4, 1990: 130.7, 2000: 172.2, 
         2010: 218.0, 2020: 258.8, 2023: 304.7, 2024: 314.0, 2025: 322.0
-    }};
+    };
 
-    window.onload = function() {{ renderHistory_{tool_id}(); }};
+    window.onload = function() { renderHistory_shadowstats_inflation_calculator(); };
 
-    function getOfficialCPI(year) {{
+    function getOfficialCPI(year) {
         // Returns exact anchor if exists, otherwise linear interpolation
         if (CPI_ANCHORS[year]) return CPI_ANCHORS[year];
         
@@ -76,95 +70,10 @@ disableSpecial1stPost: true
         // Interpolate
         let ratio = (year - low) / (high - low);
         return CPI_ANCHORS[low] + (ratio * (CPI_ANCHORS[high] - CPI_ANCHORS[low]));
-    }}
+    }
 
-    function calculate_{tool_id}() {{
-        {calculation_js}
+    function calculate_shadowstats_inflation_calculator() {
         
-        const resBox = document.getElementById('result_box');
-        document.getElementById('result_val').innerHTML = resultText;
-        resBox.style.display = 'block';
-        addToHistory_{tool_id}(historyText);
-    }}
-
-    function addToHistory_{tool_id}(item) {{
-        let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        history.unshift(item);
-        if (history.length > 5) history.pop();
-        localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
-        renderHistory_{tool_id}();
-    }}
-
-    function renderHistory_{tool_id}() {{
-        const list = document.getElementById('history_list_{tool_id}');
-        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        list.innerHTML = history.map(item => `<li>${{item}}</li>`).join('');
-    }}
-
-    function clearHistory_{tool_id}() {{
-        localStorage.removeItem(STORAGE_KEY_{tool_id});
-        renderHistory_{tool_id}();
-    }}
-</script>
-
-<style>
-  .calc-grid {{ display: grid; gap: 20px; grid-template-columns: 1fr; }}
-  @media (min-width: 768px) {{ .calc-grid {{ grid-template-columns: 2fr 1fr; }} }}
-  .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
-  .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
-  .calc-history ul {{ padding-left: 20px; color: #bbb; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
-  .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
-  .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
-  .calc-main button {{ margin-top: 20px; width: 100%; padding: 10px; background: #d32f2f; color: white; border: none; cursor: pointer; font-weight:bold; }}
-  .calc-main button:hover {{ background: #b71c1c; }}
-  .result-box {{ margin-top: 20px; padding: 15px; background: #2d2d2d; border-left: 4px solid #d32f2f; }}
-  
-  .comparison-table {{ width: 100%; margin-top: 15px; border-collapse: collapse; }}
-  .comparison-table th, .comparison-table td {{ padding: 8px; text-align: left; border-bottom: 1px solid #444; }}
-  .comparison-table th {{ color: #aaa; font-size: 0.9em; }}
-  .official-col {{ color: #4caf50; font-weight: bold; }}
-  .shadow-col {{ color: #ff5252; font-weight: bold; }}
-  .diff-col {{ color: #ff9800; font-style: italic; }}
-</style>
-
-{{{{< /calculator >}}}}
-
-## How to Interpret the Split
-{educational_content}
-
-## The Math Behind It
-The tool calculates two different future values ($FV$) based on different Consumer Price Indices (CPI):
-
-$$
-{formula_latex}
-$$
-
-**Where:**
-
-{variable_definitions}
-"""
-    
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(content)
-    print(f"✅ Created: {filename}")
-
-
-# === DEFINING THE SHADOW INFLATION CALCULATOR ===
-
-shadow_inputs = """
-<label>Start Year (1913 - Present)</label>
-<input type="number" id="start_year" placeholder="e.g. 1970" value="1970">
-
-<label>Amount in Start Year ($)</label>
-<input type="number" id="start_amount" placeholder="e.g. 1000" value="1000">
-
-<label>Target Year</label>
-<input type="number" id="end_year" placeholder="e.g. 2024" value="2024">
-"""
-
-# The JS Logic handles the divergence reconstruction
-shadow_js = """
     let y1 = parseInt(document.getElementById('start_year').value);
     let amt = parseFloat(document.getElementById('start_amount').value);
     let y2 = parseInt(document.getElementById('end_year').value);
@@ -255,13 +164,61 @@ shadow_js = """
             <small>If you feel like life is ${pct_diff.toFixed(0)}% more expensive than the news says, the ShadowStats model agrees with you.</small>
         `;
         
-        historyText = `${y1} ($${amt}) \u2192 ${y2}: Gap +${pct_diff.toFixed(0)}%`;
+        historyText = `${y1} ($${amt}) → ${y2}: Gap +${pct_diff.toFixed(0)}%`;
     }
-"""
 
-shadow_latex = r"FV = P \times \frac{CPI_{End}}{CPI_{Start}} \quad \text{vs} \quad FV_{Shadow} = P \times \frac{CPI_{End} \cdot (1+d)^n}{CPI_{Start}}"
+        
+        const resBox = document.getElementById('result_box');
+        document.getElementById('result_val').innerHTML = resultText;
+        resBox.style.display = 'block';
+        addToHistory_shadowstats_inflation_calculator(historyText);
+    }
 
-shadow_content = """
+    function addToHistory_shadowstats_inflation_calculator(item) {
+        let history = JSON.parse(localStorage.getItem(STORAGE_KEY_shadowstats_inflation_calculator)) || [];
+        history.unshift(item);
+        if (history.length > 5) history.pop();
+        localStorage.setItem(STORAGE_KEY_shadowstats_inflation_calculator, JSON.stringify(history));
+        renderHistory_shadowstats_inflation_calculator();
+    }
+
+    function renderHistory_shadowstats_inflation_calculator() {
+        const list = document.getElementById('history_list_shadowstats_inflation_calculator');
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_shadowstats_inflation_calculator)) || [];
+        list.innerHTML = history.map(item => `<li>${item}</li>`).join('');
+    }
+
+    function clearHistory_shadowstats_inflation_calculator() {
+        localStorage.removeItem(STORAGE_KEY_shadowstats_inflation_calculator);
+        renderHistory_shadowstats_inflation_calculator();
+    }
+</script>
+
+<style>
+  .calc-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .calc-grid { grid-template-columns: 2fr 1fr; } }
+  .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
+  .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
+  .calc-history ul { padding-left: 20px; color: #bbb; }
+  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }
+  .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
+  .calc-main input, .calc-main select { width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }
+  .calc-main button { margin-top: 20px; width: 100%; padding: 10px; background: #d32f2f; color: white; border: none; cursor: pointer; font-weight:bold; }
+  .calc-main button:hover { background: #b71c1c; }
+  .result-box { margin-top: 20px; padding: 15px; background: #2d2d2d; border-left: 4px solid #d32f2f; }
+  
+  .comparison-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
+  .comparison-table th, .comparison-table td { padding: 8px; text-align: left; border-bottom: 1px solid #444; }
+  .comparison-table th { color: #aaa; font-size: 0.9em; }
+  .official-col { color: #4caf50; font-weight: bold; }
+  .shadow-col { color: #ff5252; font-weight: bold; }
+  .diff-col { color: #ff9800; font-style: italic; }
+</style>
+
+{{< /calculator >}}
+
+## How to Interpret the Split
+
 ### The Tale of Two Inflations
 This calculator allows you to see the difference between the **Official CPI** (Consumer Price Index) reported by the Bureau of Labor Statistics and the **ShadowStats Alternative CPI**.
 
@@ -273,23 +230,20 @@ In 1980 and again in 1990, the US government changed how it calculates inflation
 2.  **Hedonics:** If a computer costs the same but gets faster, the government counts that as a *price drop*. ShadowStats argues you still paid the same amount of cash.
 
 By removing these adjustments and using the original **1980 Methodology**, ShadowStats typically shows inflation running 4% to 8% higher than official reports.
-"""
 
-shadow_vars = """
+
+## The Math Behind It
+The tool calculates two different future values ($FV$) based on different Consumer Price Indices (CPI):
+
+$$
+FV = P \times \frac{CPI_{End}}{CPI_{Start}} \quad \text{vs} \quad FV_{Shadow} = P \times \frac{CPI_{End} \cdot (1+d)^n}{CPI_{Start}}
+$$
+
+**Where:**
+
+
 * $FV$ is the **Future Value** (Cost in Target Year).
 * $P$ is the **Principal** (Amount in Start Year).
 * $d$ is the **Divergence Factor** (The difference in methodology).
 * $n$ is the number of years the divergence has compounded.
-"""
 
-# === GENERATE THE FILE ===
-create_calculator(
-    title="ShadowStats Inflation Calculator", 
-    category="Economics", 
-    description="Compare Official US CPI inflation against the ShadowStats (1980-based) true inflation. See how much the methodology changes affect your wallet.",
-    inputs_html=shadow_inputs,
-    calculation_js=shadow_js,
-    formula_latex=shadow_latex,
-    educational_content=shadow_content,
-    variable_definitions=shadow_vars 
-)
