@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 # --- CONFIGURATION & PATH SETUP ---
 # 1. Get the folder where THIS script is currently running (e.g., .../tools)
@@ -18,17 +19,22 @@ def create_calculator(title, category, description, inputs_html, calculation_js,
     """
     Generates a Professional Hugo Calculator for CalcFoundry.
     """
-    # Create a safe filename from the title
+    # 1. Create a safe filename from the title
     safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
     filename = os.path.join(OUTPUT_DIR, f"{safe_title}.md")
     
     # Create a unique ID for JS variables to prevent conflicts if multiple calcs are on one page
     tool_id = safe_title.replace("-", "_")
     
+    # 2. GET TODAY'S DATE AUTOMATICALLY
+    # This creates a string like "2025-12-08"
+    date_str = datetime.now().strftime("%Y-%m-%d")
+
     # --- THE MARKDOWN TEMPLATE ---
+    # 3. USE {date_str} INSTEAD OF HARDCODED DATE
     content = f"""---
 title: "{title}"
-date: 2025-12-09
+date: {date_str}
 categories: ["{category}"]
 summary: "{description}"
 math: true
