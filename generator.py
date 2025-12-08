@@ -51,7 +51,7 @@ disableSpecial1stPost: true
 </div>
 
 <script>
-    const STORAGE_KEY_{tool_id} = "omnicalc_history_{tool_id}";
+    const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}";
     window.onload = function() {{ renderHistory_{tool_id}(); }};
 
     function calculate_{tool_id}() {{
