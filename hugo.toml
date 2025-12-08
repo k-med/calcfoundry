@@ -54,3 +54,9 @@ buildExpired = false
     name = "♥ Donate"
     url = "https://ko-fi.com/"
     weight = 30
+    
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
