@@ -23,6 +23,7 @@ buildExpired = false
   ShowReadingTime = false
   ShowBreadCrumbs = true
   ShowPostNavLinks = true
+  math = true
   
   # This makes the top post look identical to the others (Uniformity)
   disableSpecial1stPost = true 
