@@ -2,5 +2,5 @@
 title: "Search"
 layout: "search"
 summary: "search"
-placeholder: "Search for a calculator..."
+placeholder: "Search for a tool..."
 ---
