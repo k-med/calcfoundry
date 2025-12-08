@@ -33,11 +33,10 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
     </div>
     
     <div style="margin-top: 15px; text-align: center; font-size: 0.85em;">
-        <a href="#the-math-behind-it" style="color: #666; text-decoration: underline; cursor: pointer;">
+        <a href="#the-math-behind-it" style="color: #888; text-decoration: underline; cursor: pointer;">
             How is this calculated?
         </a>
     </div>
-
   </div>
 
   <div class="calc-history">
@@ -48,43 +47,32 @@ Calculate the true statistical accuracy of a rating or conversion rate using the
 </div>
 
 <script>
-    const STORAGE_KEY_true_rating_calculator_wilson_score = "omnicalc_history_true_rating_calculator_wilson_score";
+    const STORAGE_KEY_true_rating_calculator_wilson_score = "calcfoundry_history_true_rating_calculator_wilson_score"; 
 
     window.onload = function() { renderHistory_true_rating_calculator_wilson_score(); };
 
     function calculate_true_rating_calculator_wilson_score() {
         
-    // 1. Get Inputs
     let n = parseFloat(document.getElementById('n_trials').value);
     let x = parseFloat(document.getElementById('n_success').value);
     let z = parseFloat(document.getElementById('conf_level').value);
 
-    // 2. Validation
     if (isNaN(n) || isNaN(x) || n <= 0) {
         var resultText = "Please enter valid positive numbers.";
     } else if (x > n) {
         var resultText = "Successes cannot be greater than Total Trials.";
     } else {
-        // 3. Wilson Score Formula Logic
-        // p_hat is the observed proportion
         let p = x / n;
-        
-        // Parts of the formula broken down for readability
         let p1 = p + ( (z*z) / (2*n) );
         let p2 = z * Math.sqrt( ( (p*(1-p))/n ) + ( (z*z)/(4*n*n) ) );
         let p3 = 1 + ( (z*z) / n );
-        
-        // Calculate Lower and Upper Bounds
         let lower = (p1 - p2) / p3;
         let upper = (p1 + p2) / p3;
         
-        // Convert to Percentages
         let obs_perc = (p * 100).toFixed(2);
         let min_perc = (lower * 100).toFixed(2);
         let max_perc = (upper * 100).toFixed(2);
         
-        // 4. Format Output
-        // We use a clean summary string for the result text
         var resultText = `
             <strong>True Score Range:</strong> ${min_perc}% — ${max_perc}%<br>
             <small style='opacity:0.8'>Observed Rate: ${obs_perc}% (at 95% Confidence)</small>
@@ -144,14 +132,6 @@ Imagine two products:
 Mathematically, Product A has a higher average. But intuitively, you trust Product B more. 
 The **Wilson Score** solves this by asking: *"Given the data we have, what is the 'true' rating we can be 95% confident in?"*
 
-For Product A, the Wilson Score might be **20%** (because one data point is unreliable).
-For Product B, the score is likely **92%** (because the data is solid).
-
-### Real World Use Cases
-* **Amazon/eCommerce:** Ranking products by "Best Match" instead of "Highest Average".
-* **Reddit:** How "Best" comments are sorted (upvotes vs downvotes).
-* **Conversion Rate Optimization:** Determining if a landing page change actually worked.
-
 
 ## The Math Behind It
 The tool uses the following mathematical principle:
@@ -159,3 +139,11 @@ The tool uses the following mathematical principle:
 $$
 w = \frac{\hat{p} + \frac{z^2}{2n} \pm z \sqrt{\frac{\hat{p}(1-\hat{p})}{n} + \frac{z^2}{4n^2}}}{1 + \frac{z^2}{n}}
 $$
+
+**Where:**
+
+
+* $n$ is the **Total Trials** (total reviews or visitors).
+* $\hat{p}$ is the **Observed Success Rate** (successes / trials).
+* $z$ is the **Z-Score** (1.96 for 95% confidence).
+

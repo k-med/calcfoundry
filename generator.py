@@ -6,8 +6,12 @@ TOOLS_DIR = "content/posts"
 
 def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content, variable_definitions):
     """
-    Generates a Professional Hugo Calculator.
-    Now includes a dedicated 'variable_definitions' field for the math section.
+    Generates a Professional Hugo Calculator for CalcFoundry.
+    Includes:
+    - Persistent History (LocalStorage)
+    - Math Rendering (KaTeX)
+    - Educational Content (SEO)
+    - Variable Definitions (The part you were missing)
     """
     safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
     filename = f"{TOOLS_DIR}/{safe_title}.md"
@@ -15,6 +19,7 @@ def create_calculator(title, category, description, inputs_html, calculation_js,
     
     tool_id = safe_title.replace("-", "_")
     
+    # --- THE MARKDOWN TEMPLATE ---
     content = f"""---
 title: "{title}"
 date: 2025-12-08
@@ -51,7 +56,8 @@ disableSpecial1stPost: true
 </div>
 
 <script>
-    const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}";
+    const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}"; 
+
     window.onload = function() {{ renderHistory_{tool_id}(); }};
 
     function calculate_{tool_id}() {{
@@ -119,8 +125,9 @@ $$
     print(f"✅ Created: {filename}")
 
 
-# --- WILSON SCORE CALCULATOR CONFIG ---
+# --- 2. DEFINE YOUR CALCULATORS HERE ---
 
+# === Wilson Score Calculator ===
 wilson_inputs = """
 <label>Total Trials (e.g., Visitors, Reviews)</label>
 <input type="number" id="n_trials" placeholder="e.g. 100">
@@ -137,23 +144,19 @@ wilson_inputs = """
 """
 
 wilson_js = """
-    // 1. Get Inputs
     let n = parseFloat(document.getElementById('n_trials').value);
     let x = parseFloat(document.getElementById('n_success').value);
     let z = parseFloat(document.getElementById('conf_level').value);
 
-    // 2. Validation
     if (isNaN(n) || isNaN(x) || n <= 0) {
         var resultText = "Please enter valid positive numbers.";
     } else if (x > n) {
         var resultText = "Successes cannot be greater than Total Trials.";
     } else {
-        // 3. Wilson Score Formula Logic
         let p = x / n;
         let p1 = p + ( (z*z) / (2*n) );
         let p2 = z * Math.sqrt( ( (p*(1-p))/n ) + ( (z*z)/(4*n*n) ) );
         let p3 = 1 + ( (z*z) / n );
-        
         let lower = (p1 - p2) / p3;
         let upper = (p1 + p2) / p3;
         
@@ -168,7 +171,7 @@ wilson_js = """
     }
 """
 
-wilson_latex = """w = \\frac{\\hat{p} + \\frac{z^2}{2n} \\pm z \sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n} + \\frac{z^2}{4n^2}}}{1 + \\frac{z^2}{n}}"""
+wilson_latex = r"w = \frac{\hat{p} + \frac{z^2}{2n} \pm z \sqrt{\frac{\hat{p}(1-\hat{p})}{n} + \frac{z^2}{4n^2}}}{1 + \frac{z^2}{n}}"
 
 wilson_content = """
 ### Why "Average Rating" is a Lie
@@ -180,13 +183,14 @@ Mathematically, Product A has a higher average. But intuitively, you trust Produ
 The **Wilson Score** solves this by asking: *"Given the data we have, what is the 'true' rating we can be 95% confident in?"*
 """
 
-# NEW: Specific definitions for this specific calculator
+# THIS IS THE PART THAT WAS MISSING
 wilson_vars = """
 * $n$ is the **Total Trials** (total reviews or visitors).
 * $\hat{p}$ is the **Observed Success Rate** (successes / trials).
 * $z$ is the **Z-Score** (1.96 for 95% confidence).
 """
 
+# === GENERATE ===
 create_calculator(
     title="True Rating Calculator (Wilson Score)", 
     category="Statistics", 
@@ -195,5 +199,5 @@ create_calculator(
     calculation_js=wilson_js,
     formula_latex=wilson_latex,
     educational_content=wilson_content,
-    variable_definitions=wilson_vars  # <--- PASSED HERE
+    variable_definitions=wilson_vars 
 )
