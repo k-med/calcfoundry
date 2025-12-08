@@ -210,9 +210,10 @@ BMI is calculated differently depending on your unit system, though the underlyi
 
 $$
 
-\text{Metric:} \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} 
-\\[1em]
-\text{Imperial:} \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
+\begin{aligned}
+\text{Metric:} & \quad BMI = \frac{\text{weight (kg)}}{\text{height (m)}^2} \\
+\text{Imperial:} & \quad BMI = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}
+\end{aligned}
 
 $$
 
