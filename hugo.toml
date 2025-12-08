@@ -1,6 +1,6 @@
 baseURL = 'https://omnicalc-e8y.pages.dev/'
 languageCode = 'en-us'
-title = 'OmniCalc'
+title = 'CalcFoundry'
 theme = 'PaperMod'
 
 enableRobotsTXT = true
@@ -14,7 +14,7 @@ buildExpired = false
 
 [params]
   env = 'production'
-  title = 'OmniCalc'
+  title = 'CalcFoundry'
   description = 'Open Source Calculation Library'
   keywords = ['Calculator', 'Open Source', 'Engineering', 'Finance']
   author = 'Me'
@@ -33,7 +33,7 @@ buildExpired = false
 
   [[params.socialIcons]]
     name = 'github'
-    url = 'https://github.com/YOUR_USERNAME/omnicalc'
+    url = 'https://github.com/k-med/calcfoundry'
   [[params.socialIcons]]
     name = 'ko-fi'
     url = 'https://ko-fi.com/YOUR_USERNAME'
