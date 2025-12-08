@@ -1,0 +1,55 @@
+<div class="calculator-wrapper">
+    <div class="calc-interface">
+        {{ .Inner }}
+    </div>
+    <div class="calc-footer">
+        <small><em>This calculation runs locally in your browser. <a href="https://github.com/YOUR_USERNAME/omnicalc">View Source</a></em></small>
+    </div>
+</div>
+
+<style>
+    .calculator-wrapper {
+        border: 1px solid #333;
+        border-radius: 8px;
+        background: #1e1e1e; /* Dark mode bg */
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .calc-footer {
+        margin-top: 15px;
+        border-top: 1px solid #444;
+        padding-top: 10px;
+        text-align: right;
+        color: #888;
+    }
+    /* Standard Input Styling for all your calculators */
+    .calc-interface input, .calc-interface select {
+        background: #2d2d2d;
+        border: 1px solid #555;
+        color: #fff;
+        padding: 8px;
+        border-radius: 4px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .calc-interface button {
+        background: #3b82f6;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+    }
+    .calc-interface button:hover {
+        background: #2563eb;
+    }
+    .result-box {
+        margin-top: 15px;
+        padding: 10px;
+        background: #2d2d2d;
+        border-left: 4px solid #3b82f6;
+    }
+</style>
