@@ -182,13 +182,13 @@ Percentages are the universal language of comparison. Whether you are calculatin
 Depending on the mode you selected, the tool uses one of these three formulas:
 
 $$
-P = \frac{\%}{100} \cdot \text{Total} \quad \bigg| \quad \% = \frac{\text{Part}}{\text{Total}} \cdot 100 \quad \bigg| \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \cdot 100
+P = \frac{\\%}{100} \cdot \text{Total} \quad \bigg| \quad \\% = \frac{\text{Part}}{\text{Total}} \cdot 100 \quad \bigg| \quad \Delta\\% = \frac{\text{New} - \text{Old}}{\text{Old}} \cdot 100
 $$
 
 **Where:**
 
 
 * $P$ is the **Part** (the result).
-* $\Delta\%$ is the **Change** in percentage.
+* $\Delta\\%$ is the **Change** in percentage.
 * Values are standard decimal or integer inputs.
 

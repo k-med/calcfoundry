@@ -209,10 +209,10 @@ pct_js = """
     }
 """
 
-# FIX: Single line format.
-pct_latex = r"P = \frac{\%}{100} \cdot \text{Total} \quad \bigg| \quad \% = \frac{\text{Part}}{\text{Total}} \cdot 100 \quad \bigg| \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \cdot 100"
+# FIX: We use double backslash \\% so the math engine sees \% (percent symbol) 
+# instead of % (which it thinks is a comment).
+pct_latex = r"P = \frac{\%}{100} \cdot \text{Total} \quad \bigg| \quad \% = \frac{\text{Part}}{\text{Total}} \cdot 100 \quad \bigg| \quad \Delta\% = \frac{\text{New} - \text{Old}}{\text{Old}} \cdot 100".replace(r"\%", r"\\%")
 
-# FIX: Escaped the '$' signs.
 pct_content = """
 ### Why this matters
 Percentages are the universal language of comparison. Whether you are calculating a discount at a store, analyzing stock market returns, or grading a test, understanding how to manipulate these numbers is essential.
@@ -223,9 +223,10 @@ Percentages are the universal language of comparison. Whether you are calculatin
 3. **Percentage Change:** Use this to compare growth or loss. *Example: "My rent went from \$1,000 to \$1,100. How much did it go up?"*
 """
 
-pct_vars = """
+# FIX: Double backslash for the percentage sign here too
+pct_vars = r"""
 * $P$ is the **Part** (the result).
-* $\Delta\%$ is the **Change** in percentage.
+* $\Delta\\%$ is the **Change** in percentage.
 * Values are standard decimal or integer inputs.
 """
 
