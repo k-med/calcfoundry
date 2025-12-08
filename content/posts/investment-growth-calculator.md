@@ -1,6 +1,6 @@
 ---
 title: "Investment Growth Calculator"
-date: 2025-12-09
+date: 2025-12-08
 categories: ["Finance"]
 summary: "Visualize the power of compound interest with monthly contributions. See how small savings grow into massive wealth over time."
 math: true
