@@ -1,29 +1,45 @@
----
-title: "Linear Equation Grapher"
-date: 2025-12-09
-categories: ["Algebra"]
-summary: "Plot multiple linear equations (y=mx+b), find intersection points, and calculate x/y intercepts instantly with interactive graphs."
+import os
+from datetime import datetime
+
+# --- CONFIGURATION & PATH SETUP ---
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "content", "posts")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content, variable_definitions):
+    safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
+    filename = os.path.join(OUTPUT_DIR, f"{safe_title}.md")
+    
+    tool_id = safe_title.replace("-", "_")
+    date_str = datetime.now().strftime("%Y-%m-%d")
+
+    content = f"""---
+title: "{title}"
+date: {date_str}
+categories: ["{category}"]
+summary: "{description}"
 math: true
 disableSpecial1stPost: true
 ---
 
 <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
 
-Plot multiple linear equations (y=mx+b), find intersection points, and calculate x/y intercepts instantly with interactive graphs.
+{description}
 
-{{< calculator >}}
+{{{{< calculator >}}}}
 
 <div class="calc-grid">
   <div class="calc-main">
-    <div id="lines_container_linear_equation_grapher">
+    <div id="lines_container_{tool_id}">
         </div>
     
     <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button onclick="addLine_linear_equation_grapher()" class="btn-secondary">+ Add Line</button>
-        <button onclick="calculate_linear_equation_grapher()" class="btn-primary">Plot & Solve</button>
+        <button onclick="addLine_{tool_id}()" class="btn-secondary">+ Add Line</button>
+        <button onclick="calculate_{tool_id}()" class="btn-primary">Plot & Solve</button>
     </div>
 
-    <div id="graph_linear_equation_grapher" style="width:100%; height:400px; margin-top:20px; border: 1px solid #444;"></div>
+    <div id="graph_{tool_id}" style="width:100%; height:400px; margin-top:20px; border: 1px solid #444;"></div>
 
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
@@ -38,23 +54,23 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
 
   <div class="calc-history">
     <h4>Analysis Log</h4>
-    <ul id="history_list_linear_equation_grapher"></ul>
-    <button onclick="clearHistory_linear_equation_grapher()" class="btn-small">Clear Log</button>
+    <ul id="history_list_{tool_id}"></ul>
+    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear Log</button>
   </div>
 </div>
 
 <script>
     // DEFINE THE ID FOR JS SCOPE
-    const tool_id_linear_equation_grapher = "linear_equation_grapher";
-    const STORAGE_KEY_linear_equation_grapher = "calcfoundry_history_linear_equation_grapher"; 
-    let lineCount_linear_equation_grapher = 0;
+    const tool_id_{tool_id} = "{tool_id}";
+    const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}"; 
+    let lineCount_{tool_id} = 0;
 
     // Use addEventListener to avoid overwriting other page scripts
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function() {{
         // Initialize with two lines by default
-        addLine_linear_equation_grapher(); 
-        addLine_linear_equation_grapher();
-        renderHistory_linear_equation_grapher();
+        addLine_{tool_id}(); 
+        addLine_{tool_id}();
+        renderHistory_{tool_id}();
         
         // Pre-fill some example data
         const m0 = document.getElementById('m_0');
@@ -67,12 +83,12 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
         if(m1) m1.value = -0.5;
         if(b1) b1.value = 4;
         
-        calculate_linear_equation_grapher(); // Initial plot
-    });
+        calculate_{tool_id}(); // Initial plot
+    }});
 
-    function addLine_linear_equation_grapher() {
-        const container = document.getElementById('lines_container_linear_equation_grapher');
-        const id = lineCount_linear_equation_grapher++;
+    function addLine_{tool_id}() {{
+        const container = document.getElementById('lines_container_{tool_id}');
+        const id = lineCount_{tool_id}++;
         
         const div = document.createElement('div');
         div.className = 'line-input-row';
@@ -80,22 +96,105 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
         div.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px;">
                 <span style="font-weight:bold; color:#007bff;">y = </span>
-                <input type="number" id="m_${id}" placeholder="m" step="any" style="flex:1; min-width: 60px;">
+                <input type="number" id="m_${{id}}" placeholder="m" step="any" style="flex:1; min-width: 60px;">
                 <span style="font-weight:bold;">x + </span>
-                <input type="number" id="b_${id}" placeholder="b" step="any" style="flex:1; min-width: 60px;">
-                <button onclick="removeLine_linear_equation_grapher(${id})" class="btn-remove" title="Remove Line">×</button>
+                <input type="number" id="b_${{id}}" placeholder="b" step="any" style="flex:1; min-width: 60px;">
+                <button onclick="removeLine_{tool_id}(${{id}})" class="btn-remove" title="Remove Line">×</button>
             </div>
         `;
         container.appendChild(div);
-    }
+    }}
 
-    function removeLine_linear_equation_grapher(id) {
+    function removeLine_{tool_id}(id) {{
         const row = document.getElementById('line_row_' + id);
         if(row) row.remove();
-    }
+    }}
 
-    function calculate_linear_equation_grapher() {
+    function calculate_{tool_id}() {{
+        {calculation_js}
         
+        const resBox = document.getElementById('result_box');
+        document.getElementById('result_val').innerHTML = resultText;
+        resBox.style.display = 'block';
+        
+        // Only add to history if we have meaningful results
+        if (historyText && historyText !== "Lines Plotted") addToHistory_{tool_id}(historyText);
+    }}
+
+    function addToHistory_{tool_id}(item) {{
+        let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        // Prevent duplicate consecutive entries
+        if (history.length === 0 || history[0] !== item) {{
+            history.unshift(item);
+            if (history.length > 5) history.pop();
+            localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
+            renderHistory_{tool_id}();
+        }}
+    }}
+
+    function renderHistory_{tool_id}() {{
+        const list = document.getElementById('history_list_{tool_id}');
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        list.innerHTML = history.map(item => `<li>${{item}}</li>`).join('');
+    }}
+
+    function clearHistory_{tool_id}() {{
+        localStorage.removeItem(STORAGE_KEY_{tool_id});
+        renderHistory_{tool_id}();
+    }}
+</script>
+
+<style>
+  .calc-grid {{ display: grid; gap: 20px; grid-template-columns: 1fr; }}
+  @media (min-width: 768px) {{ .calc-grid {{ grid-template-columns: 2fr 1fr; }} }}
+  .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
+  .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
+  .calc-history ul {{ padding-left: 20px; color: #bbb; }}
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; border:none; color:white; cursor:pointer; }}
+  
+  .calc-main {{ background: #1e1e1e; padding: 15px; border-radius: 8px; }}
+  .line-input-row {{ background: #2d2d2d; padding: 10px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #007bff; }}
+  
+  .calc-main input {{ background: #333; border: 1px solid #555; color: white; padding: 5px; border-radius: 3px; }}
+  
+  .btn-primary {{ width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight:bold; }}
+  .btn-primary:hover {{ background: #0056b3; }}
+  
+  .btn-secondary {{ width: 100%; padding: 10px; background: #444; color: white; border: none; cursor: pointer; border-radius: 4px; }}
+  .btn-secondary:hover {{ background: #555; }}
+
+  .btn-remove {{ background: #ff4444; color: white; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }}
+  
+  .result-box {{ margin-top: 20px; padding: 15px; background: #2d2d2d; border-left: 4px solid #28a745; }}
+</style>
+
+{{{{< /calculator >}}}}
+
+## How to Use
+{educational_content}
+
+## The Math Behind It
+We calculate properties using the standard Slope-Intercept form:
+
+$$
+{formula_latex}
+$$
+
+**Where:**
+{variable_definitions}
+"""
+    
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"✅ Created: {filename}")
+
+
+# === DEFINING THE LINEAR GRAPHER LOGIC ===
+
+# Inputs are generated dynamically via JS
+graph_inputs = "" 
+
+graph_js = """
     // Retrieve the tool ID from the variable we defined in the HTML
     // Note: In the python f-string context, {tool_id} becomes the actual string.
     // In JS context, we use the variable we defined: tool_id_{tool_id}
@@ -218,67 +317,11 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
 
     var resultText = analysisHTML;
     var historyText = (intersections.length > 0) ? `${intersections.length} Intersection(s) found` : "Lines Plotted";
+"""
 
-        
-        const resBox = document.getElementById('result_box');
-        document.getElementById('result_val').innerHTML = resultText;
-        resBox.style.display = 'block';
-        
-        // Only add to history if we have meaningful results
-        if (historyText && historyText !== "Lines Plotted") addToHistory_linear_equation_grapher(historyText);
-    }
+graph_latex = r"y = mx + b \quad \bigg| \quad x_{int} = \frac{b_2 - b_1}{m_1 - m_2}"
 
-    function addToHistory_linear_equation_grapher(item) {
-        let history = JSON.parse(localStorage.getItem(STORAGE_KEY_linear_equation_grapher)) || [];
-        // Prevent duplicate consecutive entries
-        if (history.length === 0 || history[0] !== item) {
-            history.unshift(item);
-            if (history.length > 5) history.pop();
-            localStorage.setItem(STORAGE_KEY_linear_equation_grapher, JSON.stringify(history));
-            renderHistory_linear_equation_grapher();
-        }
-    }
-
-    function renderHistory_linear_equation_grapher() {
-        const list = document.getElementById('history_list_linear_equation_grapher');
-        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_linear_equation_grapher)) || [];
-        list.innerHTML = history.map(item => `<li>${item}</li>`).join('');
-    }
-
-    function clearHistory_linear_equation_grapher() {
-        localStorage.removeItem(STORAGE_KEY_linear_equation_grapher);
-        renderHistory_linear_equation_grapher();
-    }
-</script>
-
-<style>
-  .calc-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
-  @media (min-width: 768px) { .calc-grid { grid-template-columns: 2fr 1fr; } }
-  .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
-  .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
-  .calc-history ul { padding-left: 20px; color: #bbb; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; border:none; color:white; cursor:pointer; }
-  
-  .calc-main { background: #1e1e1e; padding: 15px; border-radius: 8px; }
-  .line-input-row { background: #2d2d2d; padding: 10px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #007bff; }
-  
-  .calc-main input { background: #333; border: 1px solid #555; color: white; padding: 5px; border-radius: 3px; }
-  
-  .btn-primary { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight:bold; }
-  .btn-primary:hover { background: #0056b3; }
-  
-  .btn-secondary { width: 100%; padding: 10px; background: #444; color: white; border: none; cursor: pointer; border-radius: 4px; }
-  .btn-secondary:hover { background: #555; }
-
-  .btn-remove { background: #ff4444; color: white; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-  
-  .result-box { margin-top: 20px; padding: 15px; background: #2d2d2d; border-left: 4px solid #28a745; }
-</style>
-
-{{< /calculator >}}
-
-## How to Use
-
+graph_content = """
 ### Visualizing Linear Equations
 This tool allows you to plot multiple lines simultaneously to see how they behave and where they meet.
 
@@ -291,18 +334,22 @@ This tool allows you to plot multiple lines simultaneously to see how they behav
 * **Students:** Visualize systems of linear equations to verify your algebra homework.
 * **Economics:** Find the equilibrium point where Supply ($y=mx+b$) meets Demand ($y=-mx+b$).
 * **Business:** Calculate the Break-Even point where Revenue intersects with Costs.
+"""
 
-
-## The Math Behind It
-We calculate properties using the standard Slope-Intercept form:
-
-$$
-y = mx + b \quad \bigg| \quad x_{int} = \frac{b_2 - b_1}{m_1 - m_2}
-$$
-
-**Where:**
-
+graph_vars = r"""
 * $m$ is the **Slope** (Rise over Run).
 * $b$ is the **Y-Intercept** (where the line crosses the vertical axis).
 * $x_{int}$ is the x-coordinate of the **Intersection**.
+"""
 
+# === GENERATE THE FILE ===
+create_calculator(
+    title="Linear Equation Grapher", 
+    category="Algebra", 
+    description="Plot multiple linear equations (y=mx+b), find intersection points, and calculate x/y intercepts instantly with interactive graphs.",
+    inputs_html=graph_inputs,
+    calculation_js=graph_js,
+    formula_latex=graph_latex,
+    educational_content=graph_content,
+    variable_definitions=graph_vars 
+)
