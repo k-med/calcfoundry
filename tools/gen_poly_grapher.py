@@ -116,14 +116,14 @@ disableSpecial1stPost: true
         div.className = 'line-input-row';
         div.id = 'poly_row_' + id;
         
-        // STRUCTURE: Header (Select + Delete) -> Inputs (Flex Wrap)
+        // Header
         div.innerHTML = `
             <div class="row-header">
                 <select id="degree_select_${{id}}" class="degree-select" onchange="updateInputs_{tool_id}(${{id}})">
-                    <option value="1">Degree 1 (Linear)</option>
-                    <option value="2" selected>Degree 2 (Quadratic)</option>
-                    <option value="3">Degree 3 (Cubic)</option>
-                    <option value="4">Degree 4 (Quartic)</option>
+                    <option value="1">Linear (Degree 1)</option>
+                    <option value="2" selected>Quadratic (Degree 2)</option>
+                    <option value="3">Cubic (Degree 3)</option>
+                    <option value="4">Quartic (Degree 4)</option>
                 </select>
                 <button onclick="removePoly_{tool_id}(${{id}})" class="btn-remove" title="Remove">×</button>
             </div>
@@ -140,12 +140,15 @@ disableSpecial1stPost: true
     function updateInputs_{tool_id}(id) {{
         const degree = parseInt(document.getElementById(`degree_select_${{id}}`).value);
         const area = document.getElementById(`inputs_area_${{id}}`);
+        
+        // Start with the y = label
         let html = '<div class="term-wrapper"><span class="eq-label">y =</span></div>';
         
         for(let i=degree; i>=0; i--) {{
             html += '<div class="term-wrapper">';
             
-            // Operator (except for the very first term after y=)
+            // Add operator (+) for all but the first term (highest degree)
+            // This visually separates the chunks
             if(i < degree) html += '<span class="eq-operator">+</span>';
             
             // Input Box
@@ -239,40 +242,42 @@ disableSpecial1stPost: true
       cursor: pointer;
   }}
 
-  /* EQUATION FLOW - The Horizontal Fix */
+  /* EQUATION FLOW - FLEX CONTAINER */
   .eq-group {{ 
       display: flex; 
-      flex-wrap: wrap; /* THIS IS KEY: Allows wrapping */
+      flex-wrap: wrap; /* Allows wrapping */
       align-items: center; 
-      gap: 5px; 
-      padding-top: 5px;
+      gap: 0px 8px; /* Row gap 0, Column gap 8px */
   }}
 
-  /* Grouping Input + Variable together */
+  /* INDIVIDUAL TERM WRAPPER (e.g. "2x^2") */
   .term-wrapper {{
-      display: flex;
+      display: inline-flex !important; /* Forces inline layout */
       align-items: center;
       white-space: nowrap;
-      margin-bottom: 5px; /* Spacing between wrapped lines */
+      margin-bottom: 8px; /* Spacing between wrapped lines */
   }}
 
   /* TEXT ELEMENTS */
   .eq-label {{ font-weight: bold; color: #9c27b0; font-family: monospace; font-size: 1.2em; margin-right: 8px; }}
-  .eq-operator {{ font-weight: bold; color: #888; margin: 0 6px; }}
+  .eq-operator {{ font-weight: bold; color: #888; margin-right: 6px; }}
   .eq-var {{ font-family: 'Times New Roman', serif; font-style: italic; color: #ddd; font-size: 1.1em; margin-left: 4px; }}
   
   /* COMPACT INPUT FIELDS */
   .eq-input {{ 
-      width: 60px; /* Nice and compact */
-      padding: 6px; 
-      background: #111; 
-      border: 1px solid #444; 
-      color: white; 
-      border-radius: 4px; 
+      width: 60px !important; /* Force width override */
+      min-width: 50px !important;
+      padding: 6px !important;
+      background: #111 !important; 
+      border: 1px solid #444 !important; 
+      color: white !important; 
+      border-radius: 4px !important; 
       text-align: center;
       font-size: 0.95em;
+      display: inline-block !important; /* Prevent block display */
+      margin: 0 !important;
   }}
-  .eq-input:focus {{ border-color: #9c27b0; outline: none; background: #000; }}
+  .eq-input:focus {{ border-color: #9c27b0 !important; outline: none; background: #000 !important; }}
 
   /* BUTTONS */
   .button-row {{ display: flex; gap: 10px; margin-bottom: 20px; }}
@@ -285,8 +290,9 @@ disableSpecial1stPost: true
 
   /* FIXED SQUARE DELETE BUTTON */
   .btn-remove {{ 
-      flex: 0 0 30px; /* Don't grow, don't shrink, 30px basis */
-      height: 30px; 
+      width: 30px !important; /* Forced fixed width */
+      height: 30px !important;
+      min-width: 30px !important; 
       background: #dc3545; 
       color: white; 
       border: none; 
@@ -297,7 +303,8 @@ disableSpecial1stPost: true
       justify-content: center;
       font-weight: bold; 
       font-size: 1.2em; 
-      padding: 0; /* Remove padding to keep it square */
+      padding: 0 !important;
+      margin: 0 !important;
   }}
   .btn-remove:hover {{ background: #a71d2a; }}
 
