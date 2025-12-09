@@ -30,6 +30,10 @@ buildExpired = false
 
   [params.assets]
     disableHLJS = true
+    favicon = "/favicon.ico"
+    favicon16x16 = "/favicon.ico"
+    favicon32x32 = "/favicon.ico"
+    apple_touch_icon = "/apple-touch-icon.png"
 
   [[params.socialIcons]]
     name = 'github'
