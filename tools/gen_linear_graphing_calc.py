@@ -14,9 +14,8 @@ def create_calculator(title, category, description, inputs_html, calculation_js,
     tool_id = safe_title.replace("-", "_")
     date_str = datetime.now().strftime("%Y-%m-%d")
 
-    # --- FIX: INJECT TOOL_ID INTO JS STRING ---
-    # This ensures placeholders like {tool_id} in the external JS string are replaced 
-    # with the actual ID (e.g., "linear_equation_grapher")
+    # --- INJECT TOOL_ID DIRECTLY INTO JS ---
+    # We replace the placeholder in the JS string before writing it to the file
     calculation_js = calculation_js.replace("{tool_id}", tool_id)
 
     content = f"""---
@@ -36,15 +35,16 @@ disableSpecial1stPost: true
 
 <div class="calc-grid">
   <div class="calc-main">
-    <div id="lines_container_{tool_id}">
+    
+    <div id="lines_container_{tool_id}" class="lines-container">
         </div>
     
-    <div style="display: flex; gap: 10px; margin-top: 10px;">
+    <div class="button-row">
         <button onclick="addLine_{tool_id}()" class="btn-secondary">+ Add Line</button>
         <button onclick="calculate_{tool_id}()" class="btn-primary">Plot & Solve</button>
     </div>
 
-    <div id="graph_{tool_id}" style="width:100%; height:400px; margin-top:20px; border: 1px solid #444;"></div>
+    <div id="graph_{tool_id}" class="graph-box"></div>
 
     <div id="result_box" class="result-box" style="display:none;">
         <span id="result_val"></span>
@@ -52,7 +52,7 @@ disableSpecial1stPost: true
     
     <div style="margin-top: 15px; text-align: center; font-size: 0.85em;">
         <a href="#the-math-behind-it" style="color: #888; text-decoration: underline; cursor: pointer;">
-            Understanding Slope-Intercept Form
+            How the math works
         </a>
     </div>
   </div>
@@ -65,31 +65,27 @@ disableSpecial1stPost: true
 </div>
 
 <script>
-    // DEFINE THE ID FOR JS SCOPE
-    // This variable helps the external JS code find the correct HTML elements
-    const tool_id_{tool_id} = "{tool_id}";
     const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}"; 
     let lineCount_{tool_id} = 0;
 
-    // Use addEventListener to avoid overwriting other page scripts
+    // Wait for window load to ensure Plotly is ready
     window.addEventListener('load', function() {{
-        // Initialize with two lines by default
+        // Initialize with two lines
         addLine_{tool_id}(); 
         addLine_{tool_id}();
         renderHistory_{tool_id}();
         
-        // Pre-fill some example data
-        const m0 = document.getElementById('m_0');
-        const b0 = document.getElementById('b_0');
-        const m1 = document.getElementById('m_1');
-        const b1 = document.getElementById('b_1');
-
-        if(m0) m0.value = 2;
-        if(b0) b0.value = 1;
-        if(m1) m1.value = -0.5;
-        if(b1) b1.value = 4;
-        
-        calculate_{tool_id}(); // Initial plot
+        // Pre-fill inputs with example data so the user sees something immediately
+        setTimeout(() => {{
+            const inputs = document.querySelectorAll('#lines_container_{tool_id} input');
+            if(inputs.length >= 4) {{
+                inputs[0].value = 2;   // Line 1 Slope
+                inputs[1].value = 1;   // Line 1 Intercept
+                inputs[2].value = -0.5;// Line 2 Slope
+                inputs[3].value = 4;   // Line 2 Intercept
+                calculate_{tool_id}(); // Auto-plot
+            }}
+        }}, 100);
     }});
 
     function addLine_{tool_id}() {{
@@ -99,14 +95,16 @@ disableSpecial1stPost: true
         const div = document.createElement('div');
         div.className = 'line-input-row';
         div.id = 'line_row_' + id;
+        
+        // HTML Structure for: y = [ m ] x + [ b ]  [X]
         div.innerHTML = `
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-weight:bold; color:#007bff;">y = </span>
-                <input type="number" id="m_${{id}}" placeholder="m" step="any" style="flex:1; min-width: 60px;">
-                <span style="font-weight:bold;">x + </span>
-                <input type="number" id="b_${{id}}" placeholder="b" step="any" style="flex:1; min-width: 60px;">
-                <button onclick="removeLine_{tool_id}(${{id}})" class="btn-remove" title="Remove Line">×</button>
+            <div class="eq-group">
+                <span class="eq-text y-equals">y =</span>
+                <input type="number" class="eq-input" placeholder="m" step="any">
+                <span class="eq-text">x +</span>
+                <input type="number" class="eq-input" placeholder="b" step="any">
             </div>
+            <button onclick="removeLine_{tool_id}(${{id}})" class="btn-remove" title="Remove Line">×</button>
         `;
         container.appendChild(div);
     }}
@@ -114,6 +112,8 @@ disableSpecial1stPost: true
     function removeLine_{tool_id}(id) {{
         const row = document.getElementById('line_row_' + id);
         if(row) row.remove();
+        // Re-calculate after removing a line to update the graph
+        calculate_{tool_id}(); 
     }}
 
     function calculate_{tool_id}() {{
@@ -121,15 +121,14 @@ disableSpecial1stPost: true
         
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
-        resBox.style.display = 'block';
+        if(resultText) resBox.style.display = 'block';
         
-        // Only add to history if we have meaningful results
+        // Add to history if valid
         if (historyText && historyText !== "Lines Plotted") addToHistory_{tool_id}(historyText);
     }}
 
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        // Prevent duplicate consecutive entries
         if (history.length === 0 || history[0] !== item) {{
             history.unshift(item);
             if (history.length > 5) history.pop();
@@ -140,6 +139,7 @@ disableSpecial1stPost: true
 
     function renderHistory_{tool_id}() {{
         const list = document.getElementById('history_list_{tool_id}');
+        if(!list) return;
         const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
         list.innerHTML = history.map(item => `<li>${{item}}</li>`).join('');
     }}
@@ -151,27 +151,86 @@ disableSpecial1stPost: true
 </script>
 
 <style>
+  /* MAIN LAYOUT */
   .calc-grid {{ display: grid; gap: 20px; grid-template-columns: 1fr; }}
-  @media (min-width: 768px) {{ .calc-grid {{ grid-template-columns: 2fr 1fr; }} }}
-  .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
-  .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
-  .calc-history ul {{ padding-left: 20px; color: #bbb; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; border:none; color:white; cursor:pointer; }}
+  @media (min-width: 900px) {{ .calc-grid {{ grid-template-columns: 2fr 1fr; }} }}
   
-  .calc-main {{ background: #1e1e1e; padding: 15px; border-radius: 8px; }}
-  .line-input-row {{ background: #2d2d2d; padding: 10px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #007bff; }}
+  .calc-main {{ background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #333; }}
+  .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; height: fit-content; }}
   
-  .calc-main input {{ background: #333; border: 1px solid #555; color: white; padding: 5px; border-radius: 3px; }}
+  /* INPUT ROWS - THE FIX FOR UGLY BUTTONS */
+  .lines-container {{ display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }}
   
-  .btn-primary {{ width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight:bold; }}
+  .line-input-row {{ 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background: #2d2d2d; 
+      padding: 10px 15px; 
+      border-radius: 6px; 
+      border-left: 4px solid #007bff; 
+  }}
+  
+  .eq-group {{ display: flex; align-items: center; gap: 8px; flex: 1; }}
+  .eq-text {{ font-weight: bold; font-family: monospace; font-size: 1.1em; color: #ddd; }}
+  .y-equals {{ color: #007bff; }}
+  
+  /* INPUT FIELDS */
+  .eq-input {{ 
+      width: 70px; /* Fixed width prevents stretching */
+      padding: 6px; 
+      background: #111; 
+      border: 1px solid #444; 
+      color: white; 
+      border-radius: 4px; 
+      text-align: center;
+  }}
+  .eq-input:focus {{ border-color: #007bff; outline: none; }}
+
+  /* BUTTONS */
+  .button-row {{ display: flex; gap: 10px; margin-bottom: 20px; }}
+  
+  .btn-primary {{ flex: 2; padding: 12px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; transition: background 0.2s; }}
   .btn-primary:hover {{ background: #0056b3; }}
   
-  .btn-secondary {{ width: 100%; padding: 10px; background: #444; color: white; border: none; cursor: pointer; border-radius: 4px; }}
+  .btn-secondary {{ flex: 1; padding: 12px; background: #444; color: white; border: none; cursor: pointer; border-radius: 4px; transition: background 0.2s; }}
   .btn-secondary:hover {{ background: #555; }}
 
-  .btn-remove {{ background: #ff4444; color: white; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }}
+  /* CLOSE BUTTON FIX */
+  .btn-remove {{ 
+      flex: 0 0 28px; /* Fixed size, don't grow or shrink */
+      height: 28px; 
+      background: #dc3545; 
+      color: white; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: bold;
+      font-size: 1.2em;
+      line-height: 1;
+      margin-left: 10px;
+  }}
+  .btn-remove:hover {{ background: #a71d2a; }}
+
+  /* GRAPH CONTAINER */
+  .graph-box {{ 
+      width: 100%; 
+      height: 450px; 
+      background: #111; 
+      border: 1px solid #444; 
+      border-radius: 4px;
+      position: relative;
+  }}
   
   .result-box {{ margin-top: 20px; padding: 15px; background: #2d2d2d; border-left: 4px solid #28a745; }}
+  
+  .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; color: #ddd; }}
+  .calc-history ul {{ padding-left: 20px; color: #bbb; margin: 0; }}
+  .calc-history li {{ margin-bottom: 5px; }}
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 15px; border:none; color:white; cursor:pointer; width: 100%; border-radius: 4px; }}
 </style>
 
 {{{{< /calculator >}}}}
@@ -200,83 +259,74 @@ $$
 graph_inputs = "" 
 
 graph_js = """
-    // Retrieve the tool ID from the variable we defined in the HTML
-    // We access the global variable 'tool_id_{tool_id}' which is defined in the script tag
-    const currentToolId = tool_id_{tool_id};
+    const containerId = 'lines_container_{tool_id}';
+    const graphId = 'graph_{tool_id}';
 
     // 1. Gather all active inputs
     let lines = [];
-    const container = document.getElementById('lines_container_' + currentToolId);
+    const container = document.getElementById(containerId);
+    if(!container) return; // Safety check
+    
     const rows = container.getElementsByClassName('line-input-row');
     
     for (let row of rows) {
         let inputs = row.getElementsByTagName('input');
-        // Ensure inputs exist before accessing
         if (inputs.length >= 2) {
             let mVal = inputs[0].value;
             let bVal = inputs[1].value;
 
-            // Only parse if not empty strings
+            // Only parse if not empty
             if (mVal !== "" && bVal !== "") {
                 let m = parseFloat(mVal);
                 let b = parseFloat(bVal);
-                lines.push({m: m, b: b, eq: `y = ${m}x + ${b}`});
+                lines.push({m: m, b: b});
             }
         }
     }
 
-    if (lines.length === 0) {
-        document.getElementById('result_val').innerText = "Please enter valid numbers for Slope (m) and Y-Intercept (b).";
-        return;
-    }
-
-    // 2. Calculate Intersections to determine Graph Range
+    // 2. Determine Graph Range (Zoom level)
+    let minX = -10, maxX = 10;
+    let minY = -10, maxY = 10; 
     let intersections = [];
-    let minX = -10, maxX = 10; // Defaults
-
     let analysisHTML = "";
-    
-    // Analyze individual lines
-    analysisHTML += "<strong>Properties:</strong><br><ul style='font-size:0.9em; margin-bottom:10px;'>";
-    lines.forEach((l, i) => {
-        let xInt = (l.m !== 0) ? (-l.b / l.m).toFixed(2) : "None (Horizontal)";
-        let yInt = l.b;
-        analysisHTML += `<li>Line ${i+1}: X-Int at ${xInt}, Y-Int at ${yInt}</li>`;
-    });
-    analysisHTML += "</ul>";
 
-    // Analyze intersections
+    // Analyze intersections to auto-scale graph
     if (lines.length > 1) {
-        analysisHTML += "<strong>Intersections:</strong><br><ul style='font-size:0.9em;'>";
+        analysisHTML += "<strong>Intersections:</strong><br><ul style='font-size:0.9em; margin-bottom: 10px;'>";
         for (let i = 0; i < lines.length; i++) {
             for (let j = i + 1; j < lines.length; j++) {
                 let l1 = lines[i];
                 let l2 = lines[j];
                 
-                if (l1.m === l2.m) {
-                     analysisHTML += `<li>L${i+1} & L${j+1}: Parallel (No intersection)</li>`;
-                } else {
+                if (l1.m !== l2.m) {
                     let x_int = (l2.b - l1.b) / (l1.m - l2.m);
                     let y_int = l1.m * x_int + l1.b;
                     
-                    intersections.push({x: x_int, y: y_int, label: `Int: L${i+1}-L${j+1}`});
+                    intersections.push({x: x_int, y: y_int, label: `(${x_int.toFixed(2)}, ${y_int.toFixed(2)})`});
                     
                     // Expand graph range to include this intersection
                     if (x_int < minX) minX = x_int - 5;
                     if (x_int > maxX) maxX = x_int + 5;
+                    if (y_int < minY) minY = y_int - 5;
+                    if (y_int > maxY) maxY = y_int + 5;
 
-                    analysisHTML += `<li>L${i+1} & L${j+1} at <span style="color:#28a745; font-weight:bold;">(${x_int.toFixed(2)}, ${y_int.toFixed(2)})</span></li>`;
+                    analysisHTML += `<li>L${i+1} & L${j+1}: <span style="color:#28a745;">(${x_int.toFixed(2)}, ${y_int.toFixed(2)})</span></li>`;
                 }
             }
         }
         analysisHTML += "</ul>";
     }
+    
+    // Fallback if no lines
+    if(lines.length === 0) {
+        analysisHTML = "Please enter values for Slope (m) and Y-Intercept (b).";
+    }
 
-    // 3. Generate Plot Data with Dynamic Range
+    // 3. Generate Plot Data
     let plotData = [];
     
     lines.forEach((line, index) => {
-        // Calculate Y values at the new minX and maxX
+        // Calculate Y values at the dynamic minX and maxX
         let y1 = line.m * minX + line.b;
         let y2 = line.m * maxX + line.b;
         
@@ -284,7 +334,7 @@ graph_js = """
             x: [minX, maxX],
             y: [y1, y2],
             mode: 'lines',
-            name: `y=${line.m}x + ${line.b}`,
+            name: `y = ${line.m}x + ${line.b}`,
             line: { width: 3 }
         });
     });
@@ -297,29 +347,44 @@ graph_js = """
             mode: 'markers',
             type: 'scatter',
             name: 'Intersections',
-            marker: { size: 12, color: '#ff4444', line: {color: 'white', width: 2} },
+            marker: { size: 10, color: '#ff4444', line: {color: 'white', width: 2} },
             text: intersections.map(p => p.label)
         });
     }
 
     // 4. Render Plot
     let layout = {
-        title: 'Linear Equations Plot',
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         font: { color: '#ddd' },
-        xaxis: { title: 'X Axis', zerolinecolor: '#666', gridcolor: '#333' },
-        yaxis: { title: 'Y Axis', zerolinecolor: '#666', gridcolor: '#333' },
+        xaxis: { 
+            title: 'X Axis', 
+            zerolinecolor: '#666', 
+            gridcolor: '#333',
+            range: [minX, maxX] 
+        },
+        yaxis: { 
+            title: 'Y Axis', 
+            zerolinecolor: '#666', 
+            gridcolor: '#333',
+            range: [minY, maxY] // Auto-scale Y based on intersections
+        },
         showlegend: true,
-        legend: { x: 0, y: 1.1, orientation: "h" },
-        margin: { t: 50, b: 40, l: 50, r: 20 },
+        legend: { x: 0, y: 1.1, orientation: "h", font: {size: 10} },
+        margin: { t: 40, b: 40, l: 40, r: 20 },
         hovermode: 'closest'
     };
-
-    Plotly.newPlot('graph_' + currentToolId, plotData, layout, {displayModeBar: false});
+    
+    // Ensure Plotly is loaded
+    if (typeof Plotly !== 'undefined') {
+        Plotly.newPlot(graphId, plotData, layout, {displayModeBar: false, responsive: true});
+    } else {
+        console.error("Plotly library not loaded.");
+        document.getElementById(graphId).innerHTML = "<p style='padding:20px; color:red;'>Error: Graphing library failed to load.</p>";
+    }
 
     var resultText = analysisHTML;
-    var historyText = (intersections.length > 0) ? `${intersections.length} Intersection(s) found` : "Lines Plotted";
+    var historyText = (intersections.length > 0) ? `${intersections.length} Intersection(s)` : "Graph Updated";
 """
 
 graph_latex = r"y = mx + b \quad \bigg| \quad x_{int} = \frac{b_2 - b_1}{m_1 - m_2}"
@@ -331,7 +396,7 @@ This tool allows you to plot multiple lines simultaneously to see how they behav
 ### Features
 1.  **Multiple Lines:** Click "Add Line" to compare as many equations as you need.
 2.  **Intersection Solver:** The tool automatically calculates the exact $(x, y)$ coordinates where any two lines cross.
-3.  **Intercepts:** Quickly see where each line crosses the X and Y axes.
+3.  **Auto-Zoom:** The graph automatically scales to show you the relevant intersection points.
 
 ### Who is this for?
 * **Students:** Visualize systems of linear equations to verify your algebra homework.
