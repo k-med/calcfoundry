@@ -1,6 +1,6 @@
 {{- define "main" }}
 
-{{/* --- FEATURED TOOL SECTION --- */}}
+{{/* --- 1. FEATURED TOOL SECTION --- */}}
 {{- if .Site.Params.featuredTool.enable }}
 <div class="featured-tool-container">
     <div class="featured-image">
@@ -17,8 +17,21 @@
         </a>
     </div>
 </div>
+{{- end }}
 
+{{/* --- 2. NEW SITE INTRO (SEO BLURB) --- */}}
+<div class="site-intro-container">
+    <h1>The Open Source Calculation Library</h1>
+    <p>
+        CalcFoundry provides high-performance, privacy-focused calculators for 
+        <strong>Finance</strong>, <strong>Engineering</strong>, and <strong>Mathematics</strong>. 
+        Our tools are free, open-source, and run 100% locally in your browser—ensuring instant results with zero data tracking.
+    </p>
+</div>
+
+{{/* --- STYLING FOR BOTH SECTIONS --- */}}
 <style>
+    /* FEATURED TOOL STYLES */
     .featured-tool-container {
         display: flex;
         flex-direction: column;
@@ -29,12 +42,10 @@
         overflow: hidden;
         transition: transform 0.3s;
     }
-
     .featured-tool-container:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 20px -10px rgba(0,0,0,0.3);
     }
-
     @media (min-width: 768px) {
         .featured-tool-container {
             flex-direction: row;
@@ -49,7 +60,6 @@
             padding: 40px !important;
         }
     }
-
     .featured-image img {
         width: 100%;
         height: 100%;
@@ -57,14 +67,12 @@
         display: block;
         min-height: 250px;
     }
-
     .featured-content {
         padding: 20px;
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
-
     .featured-badge {
         display: inline-block;
         background: #00bcd4;
@@ -77,18 +85,15 @@
         margin-bottom: 10px;
         text-transform: uppercase;
     }
-
     .featured-content h2 {
         margin: 0 0 10px 0;
         font-size: 1.8rem;
     }
-
     .featured-content p {
         color: var(--secondary);
         margin-bottom: 20px;
         line-height: 1.6;
     }
-
     .featured-btn {
         background: var(--primary);
         color: var(--theme);
@@ -100,16 +105,35 @@
         border: 1px solid var(--primary);
         transition: all 0.2s;
     }
-
     .featured-btn:hover {
         background: transparent;
         color: var(--primary);
     }
+
+    /* SITE INTRO STYLES */
+    .site-intro-container {
+        max-width: 800px;
+        margin: 0 auto 50px auto; /* Spacing below the text */
+        text-align: center;
+        padding: 0 20px;
+    }
+    .site-intro-container h1 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: var(--primary);
+    }
+    .site-intro-container p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--secondary);
+    }
+    .site-intro-container strong {
+        color: var(--primary);
+    }
 </style>
-{{- end }} {{/* <--- I REMOVED THE "end" TAG THAT WAS HERE */}}
 
 
-{{/* --- STANDARD HOMEPAGE LOGIC BELOW --- */}}
+{{/* --- 3. STANDARD POST LIST --- */}}
 
 {{- if (and site.Params.profileMode.enabled .IsHome) }}
 {{- partial "index_profile.html" . }}
