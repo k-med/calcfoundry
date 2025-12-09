@@ -97,26 +97,22 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
         div.className = 'line-input-row';
         div.id = 'poly_row_' + id;
         
-        // Header with Degree Selector
-        // The inputs container will be populated by changeDegree_polynomial_grapher
+        // COMPACT HEADER: Degree Select + Delete Button
         div.innerHTML = `
-            <div style="width:100%;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <select id="degree_select_${id}" class="degree-select" onchange="updateInputs_polynomial_grapher(${id})">
-                        <option value="1">Degree 1 (Linear)</option>
-                        <option value="2" selected>Degree 2 (Quadratic)</option>
-                        <option value="3">Degree 3 (Cubic)</option>
-                        <option value="4">Degree 4 (Quartic)</option>
-                    </select>
-                    <button onclick="removePoly_polynomial_grapher(${id})" class="btn-remove" title="Remove">×</button>
-                </div>
-                <div id="inputs_area_${id}" class="eq-group"></div>
+            <div class="row-header">
+                <select id="degree_select_${id}" class="degree-select" onchange="updateInputs_polynomial_grapher(${id})">
+                    <option value="1">Linear (Degree 1)</option>
+                    <option value="2" selected>Quadratic (Degree 2)</option>
+                    <option value="3">Cubic (Degree 3)</option>
+                    <option value="4">Quartic (Degree 4)</option>
+                </select>
+                <button onclick="removePoly_polynomial_grapher(${id})" class="btn-remove" title="Remove">×</button>
             </div>
+            
+            <div id="inputs_area_${id}" class="eq-group"></div>
         `;
         container.appendChild(div);
         
-        // Trigger initial input build
-        // Manually set value if default passed
         if(defaultDegree) document.getElementById(`degree_select_${id}`).value = defaultDegree;
         updateInputs_polynomial_grapher(id);
     }
@@ -124,21 +120,16 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
     function updateInputs_polynomial_grapher(id) {
         const degree = parseInt(document.getElementById(`degree_select_${id}`).value);
         const area = document.getElementById(`inputs_area_${id}`);
-        let html = '<span class="eq-text y-equals">y =</span>';
-        
-        // Generates inputs like [ ]x^2 + [ ]x + [ ]
-        const coeffs = ['e','d','c','b','a']; // generic
-        // We only need 'degree + 1' coefficients
-        // For Deg 2: ax^2 + bx + c
+        let html = '<span class="eq-label">y =</span>';
         
         for(let i=degree; i>=0; i--) {
-            // Add symbol if not first term
-            if(i < degree) html += '<span class="eq-text">+</span>';
+            // Add operator if not first term
+            if(i < degree) html += '<span class="eq-operator">+</span>';
             
             html += `<input type="number" class="eq-input" data-power="${i}" placeholder="0" step="any">`;
             
-            if(i > 1) html += `<span class="eq-text">x<sup>${i}</sup></span>`;
-            else if (i === 1) html += `<span class="eq-text">x</span>`;
+            if(i > 1) html += `<span class="eq-var">x<sup>${i}</sup></span>`;
+            else if (i === 1) html += `<span class="eq-var">x</span>`;
         }
         
         area.innerHTML = html;
@@ -192,10 +183,9 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
     }
 
     // 2. Generate Plot Data
-    // We scan a default range, but we might want to center on the Vertex for quadratics
     let minX = -10, maxX = 10;
     
-    // Auto-center logic for Quadratics (find vertex x = -b/2a)
+    // Auto-center logic for Quadratics
     polynomials.forEach(p => {
         if(p.degree === 2) {
             let a = p.coeffs[2];
@@ -209,7 +199,7 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
     });
 
     let plotData = [];
-    let step = (maxX - minX) / 200; // Resolution
+    let step = (maxX - minX) / 200; 
 
     polynomials.forEach((poly, index) => {
         let xVals = [];
@@ -217,7 +207,6 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
         
         for(let x = minX; x <= maxX; x += step) {
             let y = 0;
-            // Evaluate polynomial y = ax^n + ...
             for(let pow in poly.coeffs) {
                 y += poly.coeffs[pow] * Math.pow(x, pow);
             }
@@ -230,13 +219,12 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
         let powers = Object.keys(poly.coeffs).sort((a,b) => b-a);
         powers.forEach((pow, i) => {
             let val = poly.coeffs[pow];
-            if(val === 0 && powers.length > 1) return; // Skip 0 terms
+            if(val === 0 && powers.length > 1) return; 
             
             let sign = (val >= 0 && i > 0) ? " + " : " ";
             if(val < 0) sign = " - ";
             
             let absVal = Math.abs(val);
-            // Don't show "1" if it's 1x^2, unless it's just "1" (const)
             let valStr = (absVal === 1 && pow > 0) ? "" : absVal;
             
             let term = "";
@@ -256,7 +244,7 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
         });
     });
 
-    // 3. Analysis (Focus on Quadratic Roots/Vertex)
+    // 3. Analysis (Quadratic focus)
     let analysisHTML = "";
     let historyText = "";
 
@@ -266,11 +254,9 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
             let b = p.coeffs[1];
             let c = p.coeffs[0];
             
-            // Vertex
             let h = -b / (2*a);
             let k = (a*h*h) + (b*h) + c;
             
-            // Discriminant
             let D = (b*b) - (4*a*c);
             let roots = "";
             
@@ -312,23 +298,18 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
     }
 
     var resultText = analysisHTML;
-    // historyText is set inside the loop
 
         
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         if(resultText) resBox.style.display = 'block';
         
-        // Log analysis if available
         if (historyText) addToHistory_polynomial_grapher(historyText);
     }
 
     function addToHistory_polynomial_grapher(item) {
-        // Only log if it contains meaningful data (like Vertex info)
         if(!item.includes("Vertex")) return;
-
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_polynomial_grapher)) || [];
-        // Avoid duplicate logging of same calculation
         if (history.length === 0 || history[0] !== item) {
             history.unshift(item);
             if (history.length > 5) history.pop();
@@ -357,47 +338,68 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
   
   .calc-main { background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #333; }
   
-  /* INPUT ROWS */
-  .lines-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  /* INPUT ROWS - COMPACT & CLEAN */
+  .lines-container { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      margin-bottom: 20px;
+      max-height: 400px; /* Prevent scrolling down too far */
+      overflow-y: auto;
+  }
   
   .line-input-row { 
       background: #2d2d2d; 
-      padding: 12px; 
+      padding: 10px; 
       border-radius: 6px; 
-      border-left: 4px solid #9c27b0; /* Purple for Polynomials */
+      border-left: 4px solid #9c27b0; 
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+  }
+
+  /* HEADER INSIDE ROW (Degree select + Delete) */
+  .row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #3d3d3d;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
   }
   
   .degree-select {
-      background: #444; color: #ddd; border: 1px solid #555; padding: 2px 5px; border-radius: 3px; font-size: 0.85em;
+      background: #333; color: #bbb; border: 1px solid #444; 
+      padding: 2px 8px; border-radius: 4px; font-size: 0.8em;
+      cursor: pointer;
   }
+  .degree-select:hover { border-color: #666; color: white; }
 
+  /* EQUATION LINE - HORIZONTAL FLOW */
   .eq-group { 
       display: flex; 
       align-items: center; 
-      flex-wrap: wrap; /* Allow wrapping for long polynomials */
-      margin-top: 8px;
+      flex-wrap: wrap; 
+      gap: 4px; /* Tight spacing between terms */
   }
 
-  .eq-text { 
-      font-weight: bold; 
-      font-family: monospace; 
-      font-size: 1.1em; 
-      color: #ddd; 
-      margin: 0 4px; 
-  }
-  .y-equals { color: #9c27b0; margin-left: 0; margin-right: 8px; }
+  /* TEXT ELEMENTS */
+  .eq-label { font-weight: bold; color: #9c27b0; font-family: monospace; font-size: 1.1em; margin-right: 4px; }
+  .eq-operator { font-weight: bold; color: #888; margin: 0 2px; }
+  .eq-var { font-family: 'Times New Roman', serif; font-style: italic; color: #ddd; font-size: 1.1em; }
   
-  /* INPUT FIELDS */
+  /* INPUT FIELDS - COMPACT */
   .eq-input { 
       width: 50px; 
-      padding: 6px; 
+      padding: 4px 2px; 
       background: #111; 
       border: 1px solid #444; 
       color: white; 
       border-radius: 4px; 
       text-align: center;
+      font-size: 0.95em;
   }
-  .eq-input:focus { border-color: #9c27b0; outline: none; }
+  .eq-input:focus { border-color: #9c27b0; outline: none; background: #000; }
 
   /* BUTTONS */
   .button-row { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -408,11 +410,14 @@ Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculat
   .btn-secondary { flex: 1; padding: 12px; background: #444; color: white; border: none; cursor: pointer; border-radius: 4px; transition: background 0.2s; }
   .btn-secondary:hover { background: #555; }
 
+  /* COMPACT DELETE BUTTON */
   .btn-remove { 
-      background: #dc3545; color: white; border: none; border-radius: 3px; 
-      cursor: pointer; padding: 2px 8px; font-weight: bold; font-size: 0.9em;
+      background: transparent; color: #ff5252; border: 1px solid #ff5252; 
+      border-radius: 4px; cursor: pointer; padding: 0px 6px; 
+      font-weight: bold; font-size: 1.1em; line-height: 1.2;
+      height: 24px; width: 24px; display: flex; align-items: center; justify-content: center;
   }
-  .btn-remove:hover { background: #a71d2a; }
+  .btn-remove:hover { background: #ff5252; color: white; }
 
   /* GRAPH CONTAINER */
   .graph-box { 
