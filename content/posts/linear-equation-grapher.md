@@ -45,6 +45,7 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
 
 <script>
     // DEFINE THE ID FOR JS SCOPE
+    // This variable helps the external JS code find the correct HTML elements
     const tool_id_linear_equation_grapher = "linear_equation_grapher";
     const STORAGE_KEY_linear_equation_grapher = "calcfoundry_history_linear_equation_grapher"; 
     let lineCount_linear_equation_grapher = 0;
@@ -97,10 +98,8 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
     function calculate_linear_equation_grapher() {
         
     // Retrieve the tool ID from the variable we defined in the HTML
-    // Note: In the python f-string context, {tool_id} becomes the actual string.
-    // In JS context, we use the variable we defined: tool_id_{tool_id}
-    
-    const currentToolId = tool_id_{tool_id};
+    // We access the global variable 'tool_id_linear_equation_grapher' which is defined in the script tag
+    const currentToolId = tool_id_linear_equation_grapher;
 
     // 1. Gather all active inputs
     let lines = [];

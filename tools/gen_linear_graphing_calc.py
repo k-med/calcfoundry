@@ -14,6 +14,11 @@ def create_calculator(title, category, description, inputs_html, calculation_js,
     tool_id = safe_title.replace("-", "_")
     date_str = datetime.now().strftime("%Y-%m-%d")
 
+    # --- FIX: INJECT TOOL_ID INTO JS STRING ---
+    # This ensures placeholders like {tool_id} in the external JS string are replaced 
+    # with the actual ID (e.g., "linear_equation_grapher")
+    calculation_js = calculation_js.replace("{tool_id}", tool_id)
+
     content = f"""---
 title: "{title}"
 date: {date_str}
@@ -61,6 +66,7 @@ disableSpecial1stPost: true
 
 <script>
     // DEFINE THE ID FOR JS SCOPE
+    // This variable helps the external JS code find the correct HTML elements
     const tool_id_{tool_id} = "{tool_id}";
     const STORAGE_KEY_{tool_id} = "calcfoundry_history_{tool_id}"; 
     let lineCount_{tool_id} = 0;
@@ -191,14 +197,11 @@ $$
 
 # === DEFINING THE LINEAR GRAPHER LOGIC ===
 
-# Inputs are generated dynamically via JS
 graph_inputs = "" 
 
 graph_js = """
     // Retrieve the tool ID from the variable we defined in the HTML
-    // Note: In the python f-string context, {tool_id} becomes the actual string.
-    // In JS context, we use the variable we defined: tool_id_{tool_id}
-    
+    // We access the global variable 'tool_id_{tool_id}' which is defined in the script tag
     const currentToolId = tool_id_{tool_id};
 
     // 1. Gather all active inputs
