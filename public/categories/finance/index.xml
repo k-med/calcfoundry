@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Finance on CalcFoundry</title>
+    <link>http://localhost:1313/categories/finance/</link>
+    <description>Recent content in Finance on CalcFoundry</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 08 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/finance/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Australia Crypto Tax Calculator</title>
+      <link>http://localhost:1313/posts/australia-crypto-tax-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/australia-crypto-tax-calculator/</guid>
+      <description>Estimate your Capital Gains Tax (CGT) on cryptocurrency trades in Australia. Includes 2024-2025 tax brackets and the 50% long-term holding discount.</description>
+    </item>
+    <item>
+      <title>Investment Growth Calculator</title>
+      <link>http://localhost:1313/posts/investment-growth-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/investment-growth-calculator/</guid>
+      <description>Visualize the power of compound interest with monthly contributions. See how small savings grow into massive wealth over time.</description>
+    </item>
+    <item>
+      <title>Retirement Planning Calculator</title>
+      <link>http://localhost:1313/posts/retirement-planning-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/retirement-planning-calculator/</guid>
+      <description>Calculate the future value of your retirement savings with a crucial twist: see both your projected account balance AND its actual purchasing power after inflation.</description>
+    </item>
+  </channel>
+</rss>

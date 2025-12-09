@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on CalcFoundry</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on CalcFoundry</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 09 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>3D Topology Explorer</title>
+      <link>http://localhost:1313/posts/3d-topology-explorer/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/3d-topology-explorer/</guid>
+      <description>Interactive 3D Surface Grapher. Visualize Paraboloids, Hyperboloids, Torus knots, and Spheres in real-time.</description>
+    </item>
+    <item>
+      <title>Linear Equation Grapher</title>
+      <link>http://localhost:1313/posts/linear-equation-grapher/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/linear-equation-grapher/</guid>
+      <description>Plot multiple linear equations (y=mx+b), find intersection points, and calculate x/y intercepts instantly with interactive graphs.</description>
+    </item>
+    <item>
+      <title>Polynomial Grapher</title>
+      <link>http://localhost:1313/posts/polynomial-grapher/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/polynomial-grapher/</guid>
+      <description>Plot and analyze Quadratic, Cubic, and Quartic functions. Automatically calculates vertex and roots for parabolas.</description>
+    </item>
+    <item>
+      <title>Australia Crypto Tax Calculator</title>
+      <link>http://localhost:1313/posts/australia-crypto-tax-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/australia-crypto-tax-calculator/</guid>
+      <description>Estimate your Capital Gains Tax (CGT) on cryptocurrency trades in Australia. Includes 2024-2025 tax brackets and the 50% long-term holding discount.</description>
+    </item>
+    <item>
+      <title>BMI Calculator</title>
+      <link>http://localhost:1313/posts/bmi-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/bmi-calculator/</guid>
+      <description>Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imperial (ft/lbs) units with accurate health categories.</description>
+    </item>
+    <item>
+      <title>Investment Growth Calculator</title>
+      <link>http://localhost:1313/posts/investment-growth-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/investment-growth-calculator/</guid>
+      <description>Visualize the power of compound interest with monthly contributions. See how small savings grow into massive wealth over time.</description>
+    </item>
+    <item>
+      <title>Retirement Planning Calculator</title>
+      <link>http://localhost:1313/posts/retirement-planning-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/retirement-planning-calculator/</guid>
+      <description>Calculate the future value of your retirement savings with a crucial twist: see both your projected account balance AND its actual purchasing power after inflation.</description>
+    </item>
+    <item>
+      <title>ShadowStats Inflation Calculator</title>
+      <link>http://localhost:1313/posts/shadowstats-inflation-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/shadowstats-inflation-calculator/</guid>
+      <description>Compare Official US CPI inflation against the ShadowStats (1980-based) true inflation. See how much the methodology changes affect your wallet.</description>
+    </item>
+    <item>
+      <title>Survey Sample Size Calculator</title>
+      <link>http://localhost:1313/posts/survey-sample-size-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/survey-sample-size-calculator/</guid>
+      <description>Calculate exactly how many survey responses you need for statistically significant results. Supports finite population correction.</description>
+    </item>
+    <item>
+      <title>True Rating Calculator (Wilson Score)</title>
+      <link>http://localhost:1313/posts/true-rating-calculator-wilson-score/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/true-rating-calculator-wilson-score/</guid>
+      <description>Calculate the true statistical accuracy of a rating or conversion rate using the Wilson Score Interval.</description>
+    </item>
+    <item>
+      <title>Universal Percentage Calculator</title>
+      <link>http://localhost:1313/posts/universal-percentage-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/universal-percentage-calculator/</guid>
+      <description>The only percentage tool you need. Calculate percentage increases, find parts of a whole, and solve &amp;lsquo;X is what percent of Y&amp;rsquo; problems instantly.</description>
+    </item>
+  </channel>
+</rss>

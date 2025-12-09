@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Economics on CalcFoundry</title>
+    <link>http://localhost:1313/categories/economics/</link>
+    <description>Recent content in Economics on CalcFoundry</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 08 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/economics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ShadowStats Inflation Calculator</title>
+      <link>http://localhost:1313/posts/shadowstats-inflation-calculator/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/shadowstats-inflation-calculator/</guid>
+      <description>Compare Official US CPI inflation against the ShadowStats (1980-based) true inflation. See how much the methodology changes affect your wallet.</description>
+    </item>
+  </channel>
+</rss>
