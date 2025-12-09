@@ -100,8 +100,8 @@ disableSpecial1stPost: true
         setTimeout(() => {{
             const inputs = document.querySelectorAll('#polys_container_{tool_id} input');
             if(inputs.length >= 3) {{
-                inputs[0].value = 1;   // a
-                inputs[1].value = -2;  // b
+                inputs[0].value = 1;   // x^2
+                inputs[1].value = -2;  // x
                 inputs[2].value = -3;  // c
                 calculate_{tool_id}(); 
             }}
@@ -116,19 +116,20 @@ disableSpecial1stPost: true
         div.className = 'line-input-row';
         div.id = 'poly_row_' + id;
         
-        // COMPACT HEADER: Degree Select + Delete Button
+        // STRUCTURE: Header (Select + Delete) -> Inputs (Flex Wrap)
         div.innerHTML = `
             <div class="row-header">
                 <select id="degree_select_${{id}}" class="degree-select" onchange="updateInputs_{tool_id}(${{id}})">
-                    <option value="1">Linear (Degree 1)</option>
-                    <option value="2" selected>Quadratic (Degree 2)</option>
-                    <option value="3">Cubic (Degree 3)</option>
-                    <option value="4">Quartic (Degree 4)</option>
+                    <option value="1">Degree 1 (Linear)</option>
+                    <option value="2" selected>Degree 2 (Quadratic)</option>
+                    <option value="3">Degree 3 (Cubic)</option>
+                    <option value="4">Degree 4 (Quartic)</option>
                 </select>
                 <button onclick="removePoly_{tool_id}(${{id}})" class="btn-remove" title="Remove">×</button>
             </div>
             
-            <div id="inputs_area_${{id}}" class="eq-group"></div>
+            <div id="inputs_area_${{id}}" class="eq-group">
+                </div>
         `;
         container.appendChild(div);
         
@@ -139,16 +140,22 @@ disableSpecial1stPost: true
     function updateInputs_{tool_id}(id) {{
         const degree = parseInt(document.getElementById(`degree_select_${{id}}`).value);
         const area = document.getElementById(`inputs_area_${{id}}`);
-        let html = '<span class="eq-label">y =</span>';
+        let html = '<div class="term-wrapper"><span class="eq-label">y =</span></div>';
         
         for(let i=degree; i>=0; i--) {{
-            // Add operator if not first term
+            html += '<div class="term-wrapper">';
+            
+            // Operator (except for the very first term after y=)
             if(i < degree) html += '<span class="eq-operator">+</span>';
             
+            // Input Box
             html += `<input type="number" class="eq-input" data-power="${{i}}" placeholder="0" step="any">`;
             
+            // Variable Label (x^2, x, etc)
             if(i > 1) html += `<span class="eq-var">x<sup>${{i}}</sup></span>`;
             else if (i === 1) html += `<span class="eq-var">x</span>`;
+            
+            html += '</div>';
         }}
         
         area.innerHTML = html;
@@ -201,14 +208,12 @@ disableSpecial1stPost: true
   
   .calc-main {{ background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #333; }}
   
-  /* INPUT ROWS - COMPACT & CLEAN */
+  /* INPUT ROWS */
   .lines-container {{ 
       display: flex; 
       flex-direction: column; 
-      gap: 12px; 
+      gap: 15px; 
       margin-bottom: 20px;
-      max-height: 400px; /* Prevent scrolling down too far */
-      overflow-y: auto;
   }}
   
   .line-input-row {{ 
@@ -216,45 +221,50 @@ disableSpecial1stPost: true
       padding: 10px; 
       border-radius: 6px; 
       border-left: 4px solid #9c27b0; 
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
   }}
 
-  /* HEADER INSIDE ROW (Degree select + Delete) */
+  /* HEADER (Degree Select + Delete) */
   .row-header {{
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #3d3d3d;
-      padding-bottom: 5px;
-      margin-bottom: 5px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
   }}
   
   .degree-select {{
-      background: #333; color: #bbb; border: 1px solid #444; 
-      padding: 2px 8px; border-radius: 4px; font-size: 0.8em;
+      background: #333; color: #ddd; border: 1px solid #555; 
+      padding: 4px 8px; border-radius: 4px; font-size: 0.9em;
       cursor: pointer;
   }}
-  .degree-select:hover {{ border-color: #666; color: white; }}
 
-  /* EQUATION LINE - HORIZONTAL FLOW */
+  /* EQUATION FLOW - The Horizontal Fix */
   .eq-group {{ 
       display: flex; 
+      flex-wrap: wrap; /* THIS IS KEY: Allows wrapping */
       align-items: center; 
-      flex-wrap: wrap; 
-      gap: 4px; /* Tight spacing between terms */
+      gap: 5px; 
+      padding-top: 5px;
+  }}
+
+  /* Grouping Input + Variable together */
+  .term-wrapper {{
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      margin-bottom: 5px; /* Spacing between wrapped lines */
   }}
 
   /* TEXT ELEMENTS */
-  .eq-label {{ font-weight: bold; color: #9c27b0; font-family: monospace; font-size: 1.1em; margin-right: 4px; }}
-  .eq-operator {{ font-weight: bold; color: #888; margin: 0 2px; }}
-  .eq-var {{ font-family: 'Times New Roman', serif; font-style: italic; color: #ddd; font-size: 1.1em; }}
+  .eq-label {{ font-weight: bold; color: #9c27b0; font-family: monospace; font-size: 1.2em; margin-right: 8px; }}
+  .eq-operator {{ font-weight: bold; color: #888; margin: 0 6px; }}
+  .eq-var {{ font-family: 'Times New Roman', serif; font-style: italic; color: #ddd; font-size: 1.1em; margin-left: 4px; }}
   
-  /* INPUT FIELDS - COMPACT */
+  /* COMPACT INPUT FIELDS */
   .eq-input {{ 
-      width: 50px; 
-      padding: 4px 2px; 
+      width: 60px; /* Nice and compact */
+      padding: 6px; 
       background: #111; 
       border: 1px solid #444; 
       color: white; 
@@ -273,14 +283,23 @@ disableSpecial1stPost: true
   .btn-secondary {{ flex: 1; padding: 12px; background: #444; color: white; border: none; cursor: pointer; border-radius: 4px; transition: background 0.2s; }}
   .btn-secondary:hover {{ background: #555; }}
 
-  /* COMPACT DELETE BUTTON */
+  /* FIXED SQUARE DELETE BUTTON */
   .btn-remove {{ 
-      background: transparent; color: #ff5252; border: 1px solid #ff5252; 
-      border-radius: 4px; cursor: pointer; padding: 0px 6px; 
-      font-weight: bold; font-size: 1.1em; line-height: 1.2;
-      height: 24px; width: 24px; display: flex; align-items: center; justify-content: center;
+      flex: 0 0 30px; /* Don't grow, don't shrink, 30px basis */
+      height: 30px; 
+      background: #dc3545; 
+      color: white; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-weight: bold; 
+      font-size: 1.2em; 
+      padding: 0; /* Remove padding to keep it square */
   }}
-  .btn-remove:hover {{ background: #ff5252; color: white; }}
+  .btn-remove:hover {{ background: #a71d2a; }}
 
   /* GRAPH CONTAINER */
   .graph-box {{ 
@@ -398,7 +417,7 @@ graph_js = """
             yVals.push(y);
         }
         
-        // Name generation: "2x^2 - 4x + 1"
+        // Name generation
         let name = "";
         let powers = Object.keys(poly.coeffs).sort((a,b) => b-a);
         powers.forEach((pow, i) => {
