@@ -4,7 +4,20 @@ date: 2025-12-09
 categories: ["Geometry"]
 summary: "Interactive 3D Surface Grapher. Visualize Paraboloids, Hyperboloids, Torus knots, and Spheres in real-time."
 math: true
-disableSpecial1stPost: true
+disableSpecial1stPost: false 
+
+# 1. PIN TO TOP
+# Lower numbers appear first. Default posts are usually weight: 0 or undefined.
+# Setting this to 1 (or a low number compared to others) pins it if you sort by weight.
+weight: 1 
+
+# 2. FEATURED IMAGE
+# This displays the image on the homepage card without loading the 3D engine.
+cover:
+    image: "/images/featured-topology.png" # Path to your screenshot
+    alt: "3D Wireframe of a Torus"
+    caption: "Interactive 3D Topology Explorer"
+    relative: false # Use absolute path from /static
 ---
 
 Interactive 3D Surface Grapher. Visualize Paraboloids, Hyperboloids, Torus knots, and Spheres in real-time.
