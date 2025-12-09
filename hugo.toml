@@ -38,6 +38,14 @@ buildExpired = false
     name = 'ko-fi'
     url = 'https://ko-fi.com/kmed430943'
 
+  [params.featuredTool]
+    enable = true
+    title = "3D Topology Explorer"
+    description = "Visualize complex geometries like Paraboloids, Toroids, and Spheres in real-time with our new 3D engine."
+    image = "/images/featured-topology.png" # Make sure this image exists in static/images/
+    url = "/posts/3d-topology-explorer/"
+    buttonText = "Launch Calculator"
+
 # This section enables the Search JSON file. 
 # Without this, the search bar cannot find any content.
 [outputs]
