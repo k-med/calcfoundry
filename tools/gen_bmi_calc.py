@@ -54,7 +54,11 @@ disableSpecial1stPost: true
   <div class="calc-history">
     <h4>Recent Checks</h4>
     <ul id="history_list_{tool_id}"></ul>
-    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_{tool_id}()" class="btn-small" style="flex:1;">&#x2193; Save .txt</button>
+        <button onclick="clearHistory_{tool_id}()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -86,7 +90,7 @@ disableSpecial1stPost: true
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
         history.unshift(item);
-        if (history.length > 5) history.pop(); 
+        if (history.length > 10) history.pop(); 
         localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
         renderHistory_{tool_id}();
     }}
@@ -101,6 +105,40 @@ disableSpecial1stPost: true
         localStorage.removeItem(STORAGE_KEY_{tool_id});
         renderHistory_{tool_id}();
     }}
+
+    function downloadHistory_{tool_id}() {{
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        if (history.length === 0) {{
+            alert("No history to download.");
+            return;
+        }}
+
+        // 1. Prepare Content
+        let content = "CalcFoundry - {title} History\\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\\n";
+        content += "-----------------------------------\\n\\n";
+        
+        history.forEach(item => {{
+            // Remove HTML tags for clean text file
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\\n";
+        }});
+
+        // 2. Create Blob
+        const blob = new Blob([content], {{ type: 'text/plain' }});
+        const url = window.URL.createObjectURL(blob);
+
+        // 3. Trigger Download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "{title.replace(' ', '_')}_History_" + new Date().toISOString().slice(0,10) + ".txt";
+        document.body.appendChild(a); // Append to body to ensure click works in all browsers
+        a.click();
+        
+        // 4. Cleanup
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }}
 </script>
 
 <style>
@@ -109,7 +147,8 @@ disableSpecial1stPost: true
   .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; }}
+  .btn-small:hover {{ background: #555; }}
   
   .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
   .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
@@ -217,6 +256,7 @@ bmi_js = """
             <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
             <small>Healthy range is usually 18.5 – 24.9</small>
         `;
+        // Clean text for history so it looks good in the download
         historyItem = `BMI ${bmi.toFixed(1)} (${category})`;
     } else {
         resultText = "Please enter valid height and weight measurements.";
@@ -224,7 +264,6 @@ bmi_js = """
     }
 """
 
-# FIX: Single line format.
 bmi_latex = r"BMI_{metric} = \frac{\text{weight (kg)}}{\text{height (m)}^2} \qquad \text{vs} \qquad BMI_{imperial} = 703 \times \frac{\text{weight (lbs)}}{\text{height (in)}^2}"
 
 bmi_content = """

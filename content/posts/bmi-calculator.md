@@ -1,6 +1,6 @@
 ---
 title: "BMI Calculator"
-date: 2025-12-08
+date: 2025-12-10
 categories: ["Health"]
 summary: "Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imperial (ft/lbs) units with accurate health categories."
 math: true
@@ -57,7 +57,11 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
   <div class="calc-history">
     <h4>Recent Checks</h4>
     <ul id="history_list_bmi_calculator"></ul>
-    <button onclick="clearHistory_bmi_calculator()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_bmi_calculator()" class="btn-small" style="flex:1;">&#x2193; Save .txt</button>
+        <button onclick="clearHistory_bmi_calculator()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -126,6 +130,7 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
             <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
             <small>Healthy range is usually 18.5 – 24.9</small>
         `;
+        // Clean text for history so it looks good in the download
         historyItem = `BMI ${bmi.toFixed(1)} (${category})`;
     } else {
         resultText = "Please enter valid height and weight measurements.";
@@ -142,7 +147,7 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
     function addToHistory_bmi_calculator(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_bmi_calculator)) || [];
         history.unshift(item);
-        if (history.length > 5) history.pop(); 
+        if (history.length > 10) history.pop(); 
         localStorage.setItem(STORAGE_KEY_bmi_calculator, JSON.stringify(history));
         renderHistory_bmi_calculator();
     }
@@ -157,6 +162,40 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
         localStorage.removeItem(STORAGE_KEY_bmi_calculator);
         renderHistory_bmi_calculator();
     }
+
+    function downloadHistory_bmi_calculator() {
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_bmi_calculator)) || [];
+        if (history.length === 0) {
+            alert("No history to download.");
+            return;
+        }
+
+        // 1. Prepare Content
+        let content = "CalcFoundry - BMI Calculator History\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\n";
+        content += "-----------------------------------\n\n";
+        
+        history.forEach(item => {
+            // Remove HTML tags for clean text file
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\n";
+        });
+
+        // 2. Create Blob
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+
+        // 3. Trigger Download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "BMI_Calculator_History_" + new Date().toISOString().slice(0,10) + ".txt";
+        document.body.appendChild(a); // Append to body to ensure click works in all browsers
+        a.click();
+        
+        // 4. Cleanup
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
 </script>
 
 <style>
@@ -165,7 +204,8 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
   .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
   .calc-history ul { padding-left: 20px; color: #bbb; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }
+  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; }
+  .btn-small:hover { background: #555; }
   
   .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
   .calc-main input, .calc-main select { width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }
