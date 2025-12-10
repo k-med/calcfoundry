@@ -1,6 +1,6 @@
 ---
 title: "Linear Equation Grapher"
-date: 2025-12-09
+date: 2025-12-10
 categories: ["Algebra"]
 summary: "Plot multiple linear equations (y=mx+b), find intersection points, and calculate x/y intercepts instantly with interactive graphs."
 math: true
@@ -40,7 +40,11 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
   <div class="calc-history">
     <h4>Analysis Log</h4>
     <ul id="history_list_linear_equation_grapher"></ul>
-    <button onclick="clearHistory_linear_equation_grapher()" class="btn-small">Clear Log</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_linear_equation_grapher()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_linear_equation_grapher()" class="btn-small" style="flex:1;">Clear Log</button>
+    </div>
   </div>
 </div>
 
@@ -232,7 +236,10 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
     }
 
     var resultText = analysisHTML;
-    var historyText = (intersections.length > 0) ? `${intersections.length} Intersection(s)` : "Graph Updated";
+    
+    // UPDATED HISTORY TEXT
+    // Now saves actual coordinates (e.g., "(2.00, 4.00), (-1.50, 3.20)") instead of just "2 Intersections"
+    var historyText = (intersections.length > 0) ? intersections.map(p => p.label).join(", ") : "Graph Updated";
 
         
         const resBox = document.getElementById('result_box');
@@ -244,6 +251,7 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
 
     function addToHistory_linear_equation_grapher(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_linear_equation_grapher)) || [];
+        // Prevent duplicate consecutive entries
         if (history.length === 0 || history[0] !== item) {
             history.unshift(item);
             if (history.length > 5) history.pop();
@@ -262,6 +270,40 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
     function clearHistory_linear_equation_grapher() {
         localStorage.removeItem(STORAGE_KEY_linear_equation_grapher);
         renderHistory_linear_equation_grapher();
+    }
+
+    function downloadHistory_linear_equation_grapher() {
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_linear_equation_grapher)) || [];
+        if (history.length === 0) {
+            alert("No history to download.");
+            return;
+        }
+
+        // 1. Prepare Content
+        let content = "CalcFoundry - Linear Equation Grapher History\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\n";
+        content += "-----------------------------------\n\n";
+        
+        history.forEach(item => {
+            // Remove HTML tags for clean text file
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\n";
+        });
+
+        // 2. Create Blob
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+
+        // 3. Trigger Download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "Linear_Equation_Grapher_History_" + new Date().toISOString().slice(0,10) + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        
+        // 4. Cleanup
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     }
 </script>
 
@@ -357,7 +399,10 @@ Plot multiple linear equations (y=mx+b), find intersection points, and calculate
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; color: #ddd; }
   .calc-history ul { padding-left: 20px; color: #bbb; margin: 0; }
   .calc-history li { margin-bottom: 5px; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 15px; border:none; color:white; cursor:pointer; width: 100%; border-radius: 4px; }
+  
+  /* UPDATED BUTTON STYLE TO MATCH BMI CALCULATOR */
+  .btn-small { background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }
+  .btn-small:hover { background: #555; }
 </style>
 
 {{< /calculator >}}

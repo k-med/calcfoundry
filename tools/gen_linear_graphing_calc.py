@@ -59,7 +59,11 @@ disableSpecial1stPost: true
   <div class="calc-history">
     <h4>Analysis Log</h4>
     <ul id="history_list_{tool_id}"></ul>
-    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear Log</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_{tool_id}()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_{tool_id}()" class="btn-small" style="flex:1;">Clear Log</button>
+    </div>
   </div>
 </div>
 
@@ -150,6 +154,7 @@ disableSpecial1stPost: true
 
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        // Prevent duplicate consecutive entries
         if (history.length === 0 || history[0] !== item) {{
             history.unshift(item);
             if (history.length > 5) history.pop();
@@ -168,6 +173,40 @@ disableSpecial1stPost: true
     function clearHistory_{tool_id}() {{
         localStorage.removeItem(STORAGE_KEY_{tool_id});
         renderHistory_{tool_id}();
+    }}
+
+    function downloadHistory_{tool_id}() {{
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        if (history.length === 0) {{
+            alert("No history to download.");
+            return;
+        }}
+
+        // 1. Prepare Content
+        let content = "CalcFoundry - {title} History\\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\\n";
+        content += "-----------------------------------\\n\\n";
+        
+        history.forEach(item => {{
+            // Remove HTML tags for clean text file
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\\n";
+        }});
+
+        // 2. Create Blob
+        const blob = new Blob([content], {{ type: 'text/plain' }});
+        const url = window.URL.createObjectURL(blob);
+
+        // 3. Trigger Download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "{title.replace(' ', '_')}_History_" + new Date().toISOString().slice(0,10) + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        
+        // 4. Cleanup
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     }}
 </script>
 
@@ -263,7 +302,10 @@ disableSpecial1stPost: true
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; color: #ddd; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; margin: 0; }}
   .calc-history li {{ margin-bottom: 5px; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 15px; border:none; color:white; cursor:pointer; width: 100%; border-radius: 4px; }}
+  
+  /* UPDATED BUTTON STYLE TO MATCH BMI CALCULATOR */
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }}
+  .btn-small:hover {{ background: #555; }}
 </style>
 
 {{{{< /calculator >}}}}
@@ -403,7 +445,10 @@ graph_js = """
     }
 
     var resultText = analysisHTML;
-    var historyText = (intersections.length > 0) ? `${intersections.length} Intersection(s)` : "Graph Updated";
+    
+    // UPDATED HISTORY TEXT
+    // Now saves actual coordinates (e.g., "(2.00, 4.00), (-1.50, 3.20)") instead of just "2 Intersections"
+    var historyText = (intersections.length > 0) ? intersections.map(p => p.label).join(", ") : "Graph Updated";
 """
 
 graph_latex = r"y = mx + b \quad \bigg| \quad x_{int} = \frac{b_2 - b_1}{m_1 - m_2}"
