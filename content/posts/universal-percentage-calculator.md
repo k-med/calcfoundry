@@ -1,6 +1,6 @@
 ---
 title: "Universal Percentage Calculator"
-date: 2025-12-08
+date: 2025-12-10
 categories: ["Math"]
 summary: "The only percentage tool you need. Calculate percentage increases, find parts of a whole, and solve 'X is what percent of Y' problems instantly."
 math: true
@@ -42,7 +42,11 @@ The only percentage tool you need. Calculate percentage increases, find parts of
   <div class="calc-history">
     <h4>History</h4>
     <ul id="history_list_universal_percentage_calculator"></ul>
-    <button onclick="clearHistory_universal_percentage_calculator()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_universal_percentage_calculator()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_universal_percentage_calculator()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -83,7 +87,7 @@ The only percentage tool you need. Calculate percentage increases, find parts of
 
     if (isNaN(valA) || isNaN(valB)) {
         resultText = "Please enter valid numbers in both fields.";
-        historyText = "Invalid Input";
+        historyText = "";
     } else {
         if (mode === 'percent_of') {
             result = (valA / 100) * valB;
@@ -128,15 +132,17 @@ The only percentage tool you need. Calculate percentage increases, find parts of
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-        addToHistory_universal_percentage_calculator(historyText);
+        if(historyText) addToHistory_universal_percentage_calculator(historyText);
     }
 
     function addToHistory_universal_percentage_calculator(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_universal_percentage_calculator)) || [];
-        history.unshift(item);
-        if (history.length > 10) history.pop();
-        localStorage.setItem(STORAGE_KEY_universal_percentage_calculator, JSON.stringify(history));
-        renderHistory_universal_percentage_calculator();
+        if (history.length === 0 || history[0] !== item) {
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem(STORAGE_KEY_universal_percentage_calculator, JSON.stringify(history));
+            renderHistory_universal_percentage_calculator();
+        }
     }
 
     function renderHistory_universal_percentage_calculator() {
@@ -149,6 +155,33 @@ The only percentage tool you need. Calculate percentage increases, find parts of
         localStorage.removeItem(STORAGE_KEY_universal_percentage_calculator);
         renderHistory_universal_percentage_calculator();
     }
+
+    function downloadHistory_universal_percentage_calculator() {
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_universal_percentage_calculator)) || [];
+        if (history.length === 0) {
+            alert("No history to download.");
+            return;
+        }
+
+        let content = "CalcFoundry - Universal Percentage Calculator History\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\n";
+        content += "-----------------------------------\n\n";
+        
+        history.forEach(item => {
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\n";
+        });
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "Universal_Percentage_Calculator_History.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
 </script>
 
 <style>
@@ -157,7 +190,9 @@ The only percentage tool you need. Calculate percentage increases, find parts of
   .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
   .calc-history ul { padding-left: 20px; color: #bbb; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }
+  .btn-small { background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }
+  .btn-small:hover { background: #555; }
+  
   .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
   .calc-main input, .calc-main select { width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }
   .calc-main button { margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }

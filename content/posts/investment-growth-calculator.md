@@ -1,6 +1,6 @@
 ---
 title: "Investment Growth Calculator"
-date: 2025-12-08
+date: 2025-12-10
 categories: ["Finance"]
 summary: "Visualize the power of compound interest with monthly contributions. See how small savings grow into massive wealth over time."
 math: true
@@ -41,7 +41,11 @@ Visualize the power of compound interest with monthly contributions. See how sma
   <div class="calc-history">
     <h4>History</h4>
     <ul id="history_list_investment_growth_calculator"></ul>
-    <button onclick="clearHistory_investment_growth_calculator()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_investment_growth_calculator()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_investment_growth_calculator()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -61,8 +65,11 @@ Visualize the power of compound interest with monthly contributions. See how sma
     if (isNaN(P)) P = 0;
     if (isNaN(PMT)) PMT = 0;
 
+    let resultText = "";
+    let historySummary = "";
+
     if (isNaN(r_annual) || isNaN(t) || t <= 0) {
-        var resultText = "Please enter a valid interest rate and time period (years > 0).";
+        resultText = "Please enter a valid interest rate and time period (years > 0).";
     } else {
         // Calculations
         let n = 12; // Monthly compounding frequency
@@ -89,27 +96,33 @@ Visualize the power of compound interest with monthly contributions. See how sma
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num);
         };
 
-        var resultText = `
+        resultText = `
             <strong>Final Balance:</strong> <span style="color:#4caf50; font-size:1.2em;">${fmt(total_fv)}</span><br>
             <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
             <small>Total Contributed: ${fmt(total_contributed)}</small><br>
             <small>Total Interest Earned: ${fmt(total_interest)}</small>
         `;
+        
+        // Create a clean summary for the history log/download
+        historySummary = `${t} yrs @ ${r_annual}%: ${fmt(total_fv)}`;
     }
 
         
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-        addToHistory_investment_growth_calculator(resultText);
+        if(historySummary) addToHistory_investment_growth_calculator(historySummary);
     }
 
     function addToHistory_investment_growth_calculator(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_investment_growth_calculator)) || [];
-        history.unshift(item);
-        if (history.length > 10) history.pop();
-        localStorage.setItem(STORAGE_KEY_investment_growth_calculator, JSON.stringify(history));
-        renderHistory_investment_growth_calculator();
+        // Prevent duplicates at top
+        if (history.length === 0 || history[0] !== item) {
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem(STORAGE_KEY_investment_growth_calculator, JSON.stringify(history));
+            renderHistory_investment_growth_calculator();
+        }
     }
 
     function renderHistory_investment_growth_calculator() {
@@ -122,6 +135,33 @@ Visualize the power of compound interest with monthly contributions. See how sma
         localStorage.removeItem(STORAGE_KEY_investment_growth_calculator);
         renderHistory_investment_growth_calculator();
     }
+
+    function downloadHistory_investment_growth_calculator() {
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_investment_growth_calculator)) || [];
+        if (history.length === 0) {
+            alert("No history to download.");
+            return;
+        }
+
+        let content = "CalcFoundry - Investment Growth Calculator History\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\n";
+        content += "-----------------------------------\n\n";
+        
+        history.forEach(item => {
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\n";
+        });
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "Investment_Growth_Calculator_History.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
 </script>
 
 <style>
@@ -130,7 +170,9 @@ Visualize the power of compound interest with monthly contributions. See how sma
   .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
   .calc-history ul { padding-left: 20px; color: #bbb; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }
+  .btn-small { background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }
+  .btn-small:hover { background: #555; }
+  
   .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
   .calc-main input, .calc-main select { width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }
   .calc-main button { margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }

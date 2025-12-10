@@ -2,36 +2,18 @@ import os
 from datetime import datetime
 
 # --- CONFIGURATION & PATH SETUP ---
-# 1. Get the folder where THIS script is currently running (e.g., .../tools)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# 2. Go up one level to find the Project Root (e.g., .../my-hugo-site)
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-
-# 3. Define the output directory based on the project root
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, "content", "posts")
-
-# Ensure the output directory exists
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-# ---------------------
 
 def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content, variable_definitions):
-    """
-    Generates a Professional Hugo Calculator for CalcFoundry.
-    """
-    # 1. Create a safe filename from the title
     safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
     filename = os.path.join(OUTPUT_DIR, f"{safe_title}.md")
     
-    # Create a unique ID for JS variables to prevent conflicts if multiple calcs are on one page
     tool_id = safe_title.replace("-", "_")
-    
-    # 2. GET TODAY'S DATE AUTOMATICALLY
-    # This creates a string like "2025-12-08"
     date_str = datetime.now().strftime("%Y-%m-%d")
 
-    # --- THE MARKDOWN TEMPLATE ---
-    # 3. USE {date_str} INSTEAD OF HARDCODED DATE
     content = f"""---
 title: "{title}"
 date: {date_str}
@@ -63,7 +45,11 @@ disableSpecial1stPost: true
   <div class="calc-history">
     <h4>History</h4>
     <ul id="history_list_{tool_id}"></ul>
-    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_{tool_id}()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_{tool_id}()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -78,15 +64,18 @@ disableSpecial1stPost: true
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-        addToHistory_{tool_id}(resultText);
+        if(historySummary) addToHistory_{tool_id}(historySummary);
     }}
 
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        history.unshift(item);
-        if (history.length > 10) history.pop();
-        localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
-        renderHistory_{tool_id}();
+        // Prevent duplicates at top
+        if (history.length === 0 || history[0] !== item) {{
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
+            renderHistory_{tool_id}();
+        }}
     }}
 
     function renderHistory_{tool_id}() {{
@@ -99,6 +88,33 @@ disableSpecial1stPost: true
         localStorage.removeItem(STORAGE_KEY_{tool_id});
         renderHistory_{tool_id}();
     }}
+
+    function downloadHistory_{tool_id}() {{
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        if (history.length === 0) {{
+            alert("No history to download.");
+            return;
+        }}
+
+        let content = "CalcFoundry - {title} History\\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\\n";
+        content += "-----------------------------------\\n\\n";
+        
+        history.forEach(item => {{
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\\n";
+        }});
+
+        const blob = new Blob([content], {{ type: 'text/plain' }});
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "{title.replace(' ', '_')}_History.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }}
 </script>
 
 <style>
@@ -107,7 +123,9 @@ disableSpecial1stPost: true
   .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }}
+  .btn-small:hover {{ background: #555; }}
+  
   .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
   .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
   .calc-main button {{ margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }}
@@ -163,8 +181,11 @@ compound_js = """
     if (isNaN(P)) P = 0;
     if (isNaN(PMT)) PMT = 0;
 
+    let resultText = "";
+    let historySummary = "";
+
     if (isNaN(r_annual) || isNaN(t) || t <= 0) {
-        var resultText = "Please enter a valid interest rate and time period (years > 0).";
+        resultText = "Please enter a valid interest rate and time period (years > 0).";
     } else {
         // Calculations
         let n = 12; // Monthly compounding frequency
@@ -191,12 +212,15 @@ compound_js = """
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num);
         };
 
-        var resultText = `
+        resultText = `
             <strong>Final Balance:</strong> <span style="color:#4caf50; font-size:1.2em;">${fmt(total_fv)}</span><br>
             <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
             <small>Total Contributed: ${fmt(total_contributed)}</small><br>
             <small>Total Interest Earned: ${fmt(total_interest)}</small>
         `;
+        
+        // Create a clean summary for the history log/download
+        historySummary = `${t} yrs @ ${r_annual}%: ${fmt(total_fv)}`;
     }
 """
 

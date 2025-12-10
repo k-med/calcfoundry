@@ -2,24 +2,18 @@ import os
 from datetime import datetime
 
 # --- CONFIGURATION & PATH SETUP ---
-# Replicating the setup from your provided gen_investment.py
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, "content", "posts")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def create_calculator(title, category, description, inputs_html, calculation_js, formula_latex, educational_content, variable_definitions):
-    # 1. Create a safe filename
     safe_title = "".join(c for c in title if c.isalnum() or c == " ").lower().strip().replace(" ", "-")
     filename = os.path.join(OUTPUT_DIR, f"{safe_title}.md")
     
-    # Create unique ID for JS
     tool_id = safe_title.replace("-", "_")
-    
-    # 2. Date string
     date_str = datetime.now().strftime("%Y-%m-%d")
 
-    # 3. Markdown Content Construction
     content = f"""---
 title: "{title}"
 date: {date_str}
@@ -51,7 +45,11 @@ disableSpecial1stPost: true
   <div class="calc-history">
     <h4>History</h4>
     <ul id="history_list_{tool_id}"></ul>
-    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_{tool_id}()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_{tool_id}()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -66,15 +64,17 @@ disableSpecial1stPost: true
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-        addToHistory_{tool_id}(resultText);
+        if(historySummary) addToHistory_{tool_id}(historySummary);
     }}
 
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        history.unshift(item);
-        if (history.length > 10) history.pop();
-        localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
-        renderHistory_{tool_id}();
+        if (history.length === 0 || history[0] !== item) {{
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
+            renderHistory_{tool_id}();
+        }}
     }}
 
     function renderHistory_{tool_id}() {{
@@ -87,6 +87,33 @@ disableSpecial1stPost: true
         localStorage.removeItem(STORAGE_KEY_{tool_id});
         renderHistory_{tool_id}();
     }}
+
+    function downloadHistory_{tool_id}() {{
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        if (history.length === 0) {{
+            alert("No history to download.");
+            return;
+        }}
+
+        let content = "CalcFoundry - {title} History\\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\\n";
+        content += "-----------------------------------\\n\\n";
+        
+        history.forEach(item => {{
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\\n";
+        }});
+
+        const blob = new Blob([content], {{ type: 'text/plain' }});
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "{title.replace(' ', '_')}_History.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }}
 </script>
 
 <style>
@@ -95,7 +122,9 @@ disableSpecial1stPost: true
   .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }}
+  .btn-small:hover {{ background: #555; }}
+  
   .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
   .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
   .calc-main button {{ margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }}
@@ -179,13 +208,17 @@ sample_js = """
 
     // Output Generation
     let popText = isFinite ? `Population: ${pop.toLocaleString()}` : "Infinite Population";
+    let confText = document.getElementById('confidence_level').options[document.getElementById('confidence_level').selectedIndex].text;
     
     var resultText = `
         <strong>Required Sample Size:</strong> <span style="color:#4caf50; font-size:1.4em;">${final_n}</span><br>
         <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
-        <small>${popText} @ ${document.getElementById('confidence_level').options[document.getElementById('confidence_level').selectedIndex].text}</small><br>
+        <small>${popText} @ ${confText}</small><br>
         <small>Margin of Error: ±${e_percent}%</small>
     `;
+
+    // Compact history item
+    var historySummary = `n=${final_n} (${popText.replace("Population: ", "Pop: ")}, ${e_percent}% Err)`;
 """
 
 sample_latex = r"n = \frac{\frac{Z^2 \cdot p(1-p)}{e^2}}{1 + \frac{\frac{Z^2 \cdot p(1-p)}{e^2} - 1}{N}}"

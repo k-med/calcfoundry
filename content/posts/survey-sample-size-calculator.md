@@ -1,6 +1,6 @@
 ---
 title: "Survey Sample Size Calculator"
-date: 2025-12-08
+date: 2025-12-10
 categories: ["Statistics"]
 summary: "Calculate exactly how many survey responses you need for statistically significant results. Supports finite population correction."
 math: true
@@ -46,7 +46,11 @@ Calculate exactly how many survey responses you need for statistically significa
   <div class="calc-history">
     <h4>History</h4>
     <ul id="history_list_survey_sample_size_calculator"></ul>
-    <button onclick="clearHistory_survey_sample_size_calculator()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_survey_sample_size_calculator()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_survey_sample_size_calculator()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -89,27 +93,33 @@ Calculate exactly how many survey responses you need for statistically significa
 
     // Output Generation
     let popText = isFinite ? `Population: ${pop.toLocaleString()}` : "Infinite Population";
+    let confText = document.getElementById('confidence_level').options[document.getElementById('confidence_level').selectedIndex].text;
     
     var resultText = `
         <strong>Required Sample Size:</strong> <span style="color:#4caf50; font-size:1.4em;">${final_n}</span><br>
         <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
-        <small>${popText} @ ${document.getElementById('confidence_level').options[document.getElementById('confidence_level').selectedIndex].text}</small><br>
+        <small>${popText} @ ${confText}</small><br>
         <small>Margin of Error: ±${e_percent}%</small>
     `;
+
+    // Compact history item
+    var historySummary = `n=${final_n} (${popText.replace("Population: ", "Pop: ")}, ${e_percent}% Err)`;
 
         
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-        addToHistory_survey_sample_size_calculator(resultText);
+        if(historySummary) addToHistory_survey_sample_size_calculator(historySummary);
     }
 
     function addToHistory_survey_sample_size_calculator(item) {
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_survey_sample_size_calculator)) || [];
-        history.unshift(item);
-        if (history.length > 10) history.pop();
-        localStorage.setItem(STORAGE_KEY_survey_sample_size_calculator, JSON.stringify(history));
-        renderHistory_survey_sample_size_calculator();
+        if (history.length === 0 || history[0] !== item) {
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem(STORAGE_KEY_survey_sample_size_calculator, JSON.stringify(history));
+            renderHistory_survey_sample_size_calculator();
+        }
     }
 
     function renderHistory_survey_sample_size_calculator() {
@@ -122,6 +132,33 @@ Calculate exactly how many survey responses you need for statistically significa
         localStorage.removeItem(STORAGE_KEY_survey_sample_size_calculator);
         renderHistory_survey_sample_size_calculator();
     }
+
+    function downloadHistory_survey_sample_size_calculator() {
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_survey_sample_size_calculator)) || [];
+        if (history.length === 0) {
+            alert("No history to download.");
+            return;
+        }
+
+        let content = "CalcFoundry - Survey Sample Size Calculator History\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\n";
+        content += "-----------------------------------\n\n";
+        
+        history.forEach(item => {
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\n";
+        });
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "Survey_Sample_Size_Calculator_History.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
 </script>
 
 <style>
@@ -130,7 +167,9 @@ Calculate exactly how many survey responses you need for statistically significa
   .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
   .calc-history ul { padding-left: 20px; color: #bbb; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }
+  .btn-small { background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }
+  .btn-small:hover { background: #555; }
+  
   .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
   .calc-main input, .calc-main select { width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }
   .calc-main button { margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }

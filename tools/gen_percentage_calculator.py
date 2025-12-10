@@ -45,7 +45,11 @@ disableSpecial1stPost: true
   <div class="calc-history">
     <h4>History</h4>
     <ul id="history_list_{tool_id}"></ul>
-    <button onclick="clearHistory_{tool_id}()" class="btn-small">Clear History</button>
+    
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="downloadHistory_{tool_id}()" class="btn-small" style="flex:1;">Save</button>
+        <button onclick="clearHistory_{tool_id}()" class="btn-small" style="flex:1;">Clear</button>
+    </div>
   </div>
 </div>
 
@@ -80,15 +84,17 @@ disableSpecial1stPost: true
         const resBox = document.getElementById('result_box');
         document.getElementById('result_val').innerHTML = resultText;
         resBox.style.display = 'block';
-        addToHistory_{tool_id}(historyText);
+        if(historyText) addToHistory_{tool_id}(historyText);
     }}
 
     function addToHistory_{tool_id}(item) {{
         let history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
-        history.unshift(item);
-        if (history.length > 10) history.pop();
-        localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
-        renderHistory_{tool_id}();
+        if (history.length === 0 || history[0] !== item) {{
+            history.unshift(item);
+            if (history.length > 10) history.pop();
+            localStorage.setItem(STORAGE_KEY_{tool_id}, JSON.stringify(history));
+            renderHistory_{tool_id}();
+        }}
     }}
 
     function renderHistory_{tool_id}() {{
@@ -101,6 +107,33 @@ disableSpecial1stPost: true
         localStorage.removeItem(STORAGE_KEY_{tool_id});
         renderHistory_{tool_id}();
     }}
+
+    function downloadHistory_{tool_id}() {{
+        const history = JSON.parse(localStorage.getItem(STORAGE_KEY_{tool_id})) || [];
+        if (history.length === 0) {{
+            alert("No history to download.");
+            return;
+        }}
+
+        let content = "CalcFoundry - {title} History\\n";
+        content += "Date: " + new Date().toLocaleDateString() + "\\n";
+        content += "-----------------------------------\\n\\n";
+        
+        history.forEach(item => {{
+            let cleanItem = item.replace(/<[^>]*>?/gm, '');
+            content += cleanItem + "\\n";
+        }});
+
+        const blob = new Blob([content], {{ type: 'text/plain' }});
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "{title.replace(' ', '_')}_History.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }}
 </script>
 
 <style>
@@ -109,7 +142,9 @@ disableSpecial1stPost: true
   .calc-history {{ background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }}
   .calc-history h4 {{ margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }}
   .calc-history ul {{ padding-left: 20px; color: #bbb; }}
-  .btn-small {{ background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 10px; }}
+  .btn-small {{ background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }}
+  .btn-small:hover {{ background: #555; }}
+  
   .calc-main label {{ display: block; margin-top: 10px; font-weight: bold; }}
   .calc-main input, .calc-main select {{ width: 100%; padding: 8px; margin-top: 5px; background: #333; border: 1px solid #555; color: white; }}
   .calc-main button {{ margin-top: 20px; width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }}
@@ -167,7 +202,7 @@ pct_js = """
 
     if (isNaN(valA) || isNaN(valB)) {
         resultText = "Please enter valid numbers in both fields.";
-        historyText = "Invalid Input";
+        historyText = "";
     } else {
         if (mode === 'percent_of') {
             result = (valA / 100) * valB;
