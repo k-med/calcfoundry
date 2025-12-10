@@ -59,7 +59,7 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
     <ul id="history_list_bmi_calculator"></ul>
     
     <div style="display:flex; gap:10px; margin-top:10px;">
-        <button onclick="downloadHistory_bmi_calculator()" class="btn-small" style="flex:1;">&#x2193; Save .txt</button>
+        <button onclick="downloadHistory_bmi_calculator()" class="btn-small" style="flex:1;">Save</button>
         <button onclick="clearHistory_bmi_calculator()" class="btn-small" style="flex:1;">Clear</button>
     </div>
   </div>
@@ -130,7 +130,6 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
             <hr style="border-color:#444; opacity:0.3; margin: 10px 0;">
             <small>Healthy range is usually 18.5 – 24.9</small>
         `;
-        // Clean text for history so it looks good in the download
         historyItem = `BMI ${bmi.toFixed(1)} (${category})`;
     } else {
         resultText = "Please enter valid height and weight measurements.";
@@ -189,7 +188,7 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
         const a = document.createElement('a');
         a.href = url;
         a.download = "BMI_Calculator_History_" + new Date().toISOString().slice(0,10) + ".txt";
-        document.body.appendChild(a); // Append to body to ensure click works in all browsers
+        document.body.appendChild(a);
         a.click();
         
         // 4. Cleanup
@@ -204,7 +203,7 @@ Check your Body Mass Index (BMI) instantly. Supports both Metric (cm/kg) and Imp
   .calc-history { background: #252526; padding: 15px; border-radius: 8px; font-size: 0.9em; }
   .calc-history h4 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
   .calc-history ul { padding-left: 20px; color: #bbb; }
-  .btn-small { background: #444; font-size: 0.8em; padding: 5px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; }
+  .btn-small { background: #444; font-size: 0.8em; padding: 8px 10px; margin-top: 0; color: white; border: 1px solid #555; cursor:pointer; border-radius: 4px; }
   .btn-small:hover { background: #555; }
   
   .calc-main label { display: block; margin-top: 10px; font-weight: bold; }
