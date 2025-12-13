@@ -268,14 +268,14 @@ tax_js = """
     }
 """
 
-# LaTeX for the 2024-25 Revised Brackets
+# FIX: Use quadruple backslashes for rows so the Markdown file receives double backslashes
 tax_latex = r"""
 \text{Tax} = 
 \begin{cases} 
-0 & \text{if } y \le 18,200 \\
-0.16(y - 18,200) & \text{if } 18,200 < y \le 45,000 \\
-4,288 + 0.30(y - 45,000) & \text{if } 45,000 < y \le 135,000 \\
-31,288 + 0.37(y - 135,000) & \text{if } 135,000 < y \le 190,000 \\
+0 & \text{if } y \le 18,200 \\\\
+0.16(y - 18,200) & \text{if } 18,200 < y \le 45,000 \\\\
+4,288 + 0.30(y - 45,000) & \text{if } 45,000 < y \le 135,000 \\\\
+31,288 + 0.37(y - 135,000) & \text{if } 135,000 < y \le 190,000 \\\\
 51,638 + 0.45(y - 190,000) & \text{if } y > 190,000
 \end{cases}
 """

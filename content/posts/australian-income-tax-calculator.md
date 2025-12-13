@@ -1,6 +1,6 @@
 ---
 title: "Australian Income Tax Calculator"
-date: 2025-12-13
+date: 2025-12-14
 categories: ["Finance"]
 summary: "Estimate your weekly, fortnightly, or monthly take-home pay under the new 2024-2025 Revised Stage 3 tax cuts."
 math: true
@@ -250,10 +250,10 @@ $$
 
 \text{Tax} = 
 \begin{cases} 
-0 & \text{if } y \le 18,200 \\
-0.16(y - 18,200) & \text{if } 18,200 < y \le 45,000 \\
-4,288 + 0.30(y - 45,000) & \text{if } 45,000 < y \le 135,000 \\
-31,288 + 0.37(y - 135,000) & \text{if } 135,000 < y \le 190,000 \\
+0 & \text{if } y \le 18,200 \\\\
+0.16(y - 18,200) & \text{if } 18,200 < y \le 45,000 \\\\
+4,288 + 0.30(y - 45,000) & \text{if } 45,000 < y \le 135,000 \\\\
+31,288 + 0.37(y - 135,000) & \text{if } 135,000 < y \le 190,000 \\\\
 51,638 + 0.45(y - 190,000) & \text{if } y > 190,000
 \end{cases}
 
